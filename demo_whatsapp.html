@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo WhatsApp Link</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+
+        button {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #128C7E;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>Resumen de Compra</h2>
+        <div id="products-list"></div>
+        <h3 id="total-display"></h3>
+
+        <a id="wa-link" href="#" target="_blank">
+            <button>Enviar Pedido por WhatsApp 💬</button>
+        </a>
+    </div>
+
+    <h3>Texto Generado:</h3>
+    <pre id="preview-text"></pre>
+
+    <script src="assets/js/whatsapp_utils.js"></script>
+    <script>
+        // Datos de prueba
+        const saleData = {
+            storeName: "Tienda Unicornio",
+            products: [
+                { name: "Zapatillas Deportivas", quantity: 1, price: 85.00 },
+                { name: "Calcetines Pack x3", quantity: 2, price: 12.50 }
+            ],
+            total: 110.00
+        };
+
+        // Mostrar datos en HTML
+        const list = document.getElementById('products-list');
+        saleData.products.forEach(p => {
+            list.innerHTML += `<p>${p.name} x${p.quantity} - $${(p.price * p.quantity).toFixed(2)}</p>`;
+        });
+        document.getElementById('total-display').innerText = `Total: $${saleData.total.toFixed(2)}`;
+
+        // Generar Link
+        // Puedes poner un número de teléfono real como segundo argumento, ej: "5215555555555"
+        const link = generateWhatsAppLink(saleData);
+
+        document.getElementById('wa-link').href = link;
+
+        // Mostrar preview del texto decodificado
+        const urlParams = new URLSearchParams(link.split('?')[1]);
+        document.getElementById('preview-text').innerText = urlParams.get('text');
+    </script>
+</body>
+
+</html>

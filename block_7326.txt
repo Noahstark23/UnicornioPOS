@@ -1,0 +1,15 @@
+7321:     $TotalDebe+=$reg[$i]['totalpagoc']-$reg[$i]['abonototal'];
+7322: 
+7323:     $this->SetFont('Courier','',10);  
+7324:     $this->SetTextColor(3,3,3);  // Establece el color del texto (en este caso es negro)
+7325:     $this->Row(array($a++,utf8_decode($reg[$i]["codcompra"]),utf8_decode($reg[$i]['nomproveedor']),utf8_decode($simbolo.number_format($reg[$i]['totalpagoc'], 2, '.', ',')),utf8_decode($simbolo.number_format($reg[$i]['abonototal'], 2, '.', ',')),utf8_decode($simbolo.number_format($reg[$i]['totalpagoc']-$reg[$i]['abonototal'], 2, '.', ',')),utf8_decode($reg[$i]["statuscompra"]),
+7326:         utf8_decode($reg[$i]['fechavencecredito'] == '0000-00-00' || $reg[$i]['fechavencecredito'] >= date("Y-m-d") && $reg[$i]['fechapagado']== "0000-00-00" 
+7327:             ? "0" 
+7328:             : $reg[$i]['fechavencecredito'] < date("Y-m-d") && $reg[$i]['fechapagado']== "0000-00-00" ? Dias_Transcurridos(date("Y-m-d"),$reg[$i]['fechavencecredito']) : Dias_Transcurridos($reg[$i]['fechapagado'],$reg[$i]['fechavencecredito'])
+7329:         ),utf8_decode(date("d-m-Y",strtotime($reg[$i]['fechaemision'])))));
+7330:         }
+7331:       }
+7332:    
+7333:     $this->Cell(130,5,'',0,0,'C');
+7334:     $this->SetFont('courier','B',10);
+7335:     $this->SetTextColor(255,255,255);  // Establece el color del texto (en este caso es blanco)
