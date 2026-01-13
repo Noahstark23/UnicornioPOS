@@ -1,0 +1,35 @@
+# System
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+.idea/
+
+# PHP / Composer
+vendor/
+composer.lock
+
+# JavaScript / Node
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Config & Secrets
+.env
+includes/db.php
+config.php
+ftp-config.json
+secret.json
+
+# Logs
+*.log
+error_log
+logs/
+
+# Backups
+*.bak
+*.old
+*.sql
+*.zip
+*.rar

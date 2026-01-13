@@ -4,8 +4,8 @@ class DB {
     private $conn;
     private $host = 'localhost';
     private $db   = 'unicornio';
-    private $user = 'root';
-    private $pass = '';
+    private $user = 'root'; // Cambiar por usuario real
+    private $pass = '';     // Cambiar por contraseña real
 
     private function __construct() {
         try {
@@ -22,7 +22,7 @@ class DB {
             // 2. Sincronizar Timezone de MySQL con el de PHP
             $offset = date('P'); // Ej: -06:00
             $this->conn->exec("SET time_zone = '$offset';");
-            $this->conn->exec("SET lc_time_names = 'es_ES';"); // Opcional: Para nombres de días/meses en español
+            $this->conn->exec("SET lc_time_names = 'es_ES';");
             
         } catch (PDOException $e) {
             header('Content-Type: application/json');
