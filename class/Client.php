@@ -84,9 +84,10 @@ class Client {
 
         $new_balance = $client['current_balance'] + $amount;
 
-        // Check credit limit if set (assuming limit > 0 means limit exists)
-        if ($client['limitecredito'] > 0 && $new_balance > $client['limitecredito']) {
-            throw new Exception("Credit Limit Exceeded. Limit: " . $client['limitecredito'] . ", Current Balance: " . $client['current_balance'] . ", Attempted: " . $amount);
+        // Check credit limit. 0 or NULL means no credit allowed.
+        $limit = $client['limitecredito'] ?? 0.00;
+        if ($new_balance > $limit) {
+            throw new Exception("Credit Limit Exceeded. Limit: " . $limit . ", Current Balance: " . $client['current_balance'] . ", Attempted: " . $amount);
         }
 
         try {

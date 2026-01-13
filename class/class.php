@@ -4349,13 +4349,15 @@ public function EliminarOrigenes()
 		clientes.tipocliente,
 		clientes.limitecredito,
 		clientes.fechaingreso,
+		IFNULL(clientes.current_balance, 0.00) AS current_balance,
 	    documentos.documento,
 		provincias.provincia,
 		departamentos.departamento
 		FROM clientes 
 		LEFT JOIN documentos ON clientes.documcliente = documentos.coddocumento
 		LEFT JOIN provincias ON clientes.id_provincia = provincias.id_provincia 
-		LEFT JOIN departamentos ON clientes.id_departamento = departamentos.id_departamento";
+		LEFT JOIN departamentos ON clientes.id_departamento = departamentos.id_departamento
+		WHERE clientes.tenant_id = '".limpiar($_SESSION["codsucursal"])."'";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
