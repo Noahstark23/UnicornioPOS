@@ -105,37 +105,28 @@
                 </div>
             </div>
 
-            <div class="p-6 bg-gray-50 border-t sticky bottom-0 shadow-2xl">
-                <div class="flex justify-between text-xl font-bold mb-4 text-gray-800">
+            <div class="p-6 bg-gray-50 border-t">
+                <div class="flex justify-between text-xl font-bold mb-6 text-gray-800">
                     <span>Total</span>
                     <span x-text="'C$ ' + total()"></span>
                 </div>
-                <!-- Botón Cobrar Mejorado - Más Visible y Responsive -->
                 <button @click="abrirModalPago()" 
-                        class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
-                               text-white font-black text-2xl py-6 px-8 rounded-2xl shadow-2xl 
-                               transform hover:scale-105 active:scale-95 transition-all duration-200 
-                               flex items-center justify-center gap-4 border-2 border-green-400
-                               focus:outline-none focus:ring-4 focus:ring-green-300">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>💰 COBRAR</span>
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
+                    <span>Cobrar</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE PAGO MODERNIZADO -->
-    <div x-show="modalPago" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="modalPago = false">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all" @click.stop>
-            <div class="p-6 bg-gradient-to-r from-blue-600 to-purple-600 border-b flex justify-between items-center">
-                <h3 class="text-xl font-bold text-white">💳 Procesar Pago</h3>
-                <button @click="modalPago = false" class="text-white hover:text-gray-200 text-2xl font-bold">&times;</button>
+    <!-- MODAL DE PAGO -->
+    <div x-show="modalPago" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+            <div class="p-6 bg-gray-50 border-b flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">Procesar Pago</h3>
+                <button @click="modalPago = false" class="text-gray-400 hover:text-gray-600">✕</button>
             </div>
             
-            <div class="p-6 space-y-4">
+            <div class="p-6 space-y-6">
                 
                 <!-- Buscador Cliente -->
                 <div class="relative">
@@ -144,7 +135,7 @@
                         <input type="text" x-model="busquedaCliente" @input.debounce.300ms="buscarCliente()" 
                                placeholder="Buscar por nombre o teléfono..." 
                                class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        <button class="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200 transition" title="Cliente General" @click="seleccionarCliente({id:0, text:'Cliente General'})">👤</button>
+                        <button class="bg-blue-100 text-blue-600 p-3 rounded-lg" title="Cliente General" @click="seleccionarCliente({id:0, text:'Cliente General'})">👤</button>
                     </div>
                     
                     <!-- Resultados Búsqueda -->
@@ -203,11 +194,11 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Método Pago</label>
                         <select x-model="formaPago" class="w-full p-3 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="EFECTIVO">💵 Efectivo</option>
-                            <option value="TARJETA">💳 Tarjeta</option>
-                            <option value="TRANSFERENCIA">🏦 Transferencia</option>
-                            <option value="CHEQUE">📃 Cheque</option>
-                            <option value="SIN_UTILIZACION_SISTEMA_FINANCIERO">📦 Otros</option>
+                            <option value="EFECTIVO">Efectivo</option>
+                            <option value="TARJETA">Tarjeta</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                            <option value="CHEQUE">Cheque</option>
+                            <option value="SIN_UTILIZACION_SISTEMA_FINANCIERO">Otros</option>
                         </select>
                     </div>
                 </div>
@@ -285,19 +276,33 @@
 
             </div>
 
-            <!-- Botones de Acción -->
-            <div class="p-6 bg-gray-50 border-t flex gap-3">
-                <button @click="modalPago = false" 
-                        class="flex-1 py-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-bold transition shadow">
-                    Cancelar
-                </button>
-                <button @click="confirmarVenta()" 
-                        :disabled="parseFloat(pagoCon) < parseFloat(total())"
-                        :class="parseFloat(pagoCon) < parseFloat(total()) ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-green-500 hover:bg-green-600 shadow-lg hover:shadow-xl'"
-                        class="flex-1 py-4 text-white rounded-xl font-bold transition transform hover:scale-105">
-                    <span x-show="parseFloat(pagoCon) >= parseFloat(total())">✓ Confirmar Venta</span>
-                    <span x-show="parseFloat(pagoCon) < parseFloat(total())">⚠️ Pago Insuficiente</span>
-                </button>
+            <!-- Botones de Acción - MEJORADOS -->
+            <div class="p-6 bg-gradient-to-br from-gray-50 to-gray-100 border-t-4 border-green-500 sticky bottom-0 shadow-2xl">
+                <div class="flex gap-4">
+                    <!-- Botón Cancelar -->
+                    <button @click="modalPago = false" 
+                            class="flex-1 py-5 px-6 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-2xl font-bold text-lg transition shadow-lg transform hover:scale-105 active:scale-95">
+                        ❌ Cancelar
+                    </button>
+                    
+                    <!-- Botón Confirmar Venta - MUY VISIBLE -->
+                    <button @click="confirmarVenta()" 
+                            :disabled="parseFloat(pagoCon) < parseFloat(total())"
+                            :class="parseFloat(pagoCon) < parseFloat(total()) ? 
+                                    'opacity-50 cursor-not-allowed bg-gray-400' : 
+                                    'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-2xl hover:shadow-green-500/50'"
+                            class="flex-1 py-6 px-8 text-white rounded-2xl font-black text-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-green-400 focus:outline-none focus:ring-4 focus:ring-green-300">
+                        <span x-show="parseFloat(pagoCon) >= parseFloat(total())" class="flex items-center justify-center gap-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            ✅ CONFIRMAR VENTA
+                        </span>
+                        <span x-show="parseFloat(pagoCon) < parseFloat(total())" class="flex items-center justify-center gap-2">
+                            ⚠️ Pago Insuficiente
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -318,16 +323,7 @@
             </div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-2">¡Venta Registrada!</h2>
-            <p class="text-gray-500 mb-2">Ticket: <span class="font-mono font-bold text-gray-800" x-text="ultimoCodigo"></span></p>
-            
-            <!-- CAMBIO DESTACADO PARA EL CAJERO -->
-            <div x-show="cambioFinal > 0" class="mb-6 p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-2xl">
-                <div class="text-xs font-bold uppercase tracking-wider text-green-700 mb-1">💰 Cambio a Devolver</div>
-                <div class="font-black text-6xl text-green-600" x-text="'C$ ' + cambioFinal.toFixed(2)"></div>
-            </div>
-            <div x-show="cambioFinal === 0" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div class="text-sm font-bold text-blue-700">✓ Pago Exacto - Sin Cambio</div>
-            </div>
+            <p class="text-gray-500 mb-8">Ticket: <span class="font-mono font-bold text-gray-800" x-text="ultimoCodigo"></span></p>
 
             <div class="space-y-3">
                 <button @click="imprimirTicket()" 
@@ -360,7 +356,6 @@
                 modalPago: false,
                 ventaExitosa: false, // Nuevo estado
                 ultimoCodigo: '',    // Nuevo estado
-                cambioFinal: 0,      // Para mostrar en modal de éxito
                 clienteSeleccionado: null,
                 busquedaCliente: '',
                 clientesEncontrados: [],
@@ -496,8 +491,23 @@
                     }, 0).toFixed(2);
                 },
 
+                // FUNCIONES PARA MODAL MODERNIZADO
                 cambio() {
                     return (parseFloat(this.pagoCon || 0) - parseFloat(this.total())).toFixed(2);
+                },
+
+                validacionPago() {
+                    const pago = parseFloat(this.pagoCon) || 0;
+                    const tot = parseFloat(this.total());
+                    if (pago === 0) return 'border-gray-300 focus:border-blue-500';
+                    if (pago < tot) return 'border-red-500 bg-red-50 focus:border-red-600';
+                    return 'border-green-500 bg-green-50 focus:border-green-600';
+                },
+
+                cambioClase() {
+                    const camb = parseFloat(this.cambio());
+                    if (camb < 0) return 'bg-red-100 border-2 border-red-300';
+                    return 'bg-green-100 border-2 border-green-300';
                 },
 
                 // Lógica Modal
@@ -512,22 +522,6 @@
                     this.$nextTick(() => {
                         if(this.$refs.inputPago) this.$refs.inputPago.select();
                     });
-                },
-
-                // Validación visual del campo de pago
-                validacionPago() {
-                    const pago = parseFloat(this.pagoCon) || 0;
-                    const tot = parseFloat(this.total());
-                    if (pago === 0) return 'border-gray-300 focus:border-blue-500';
-                    if (pago < tot) return 'border-red-500 bg-red-50 focus:border-red-600';
-                    return 'border-green-500 bg-green-50 focus:border-green-600';
-                },
-
-                // Clase dinámica para el cambio
-                cambioClase() {
-                    const camb = parseFloat(this.cambio());
-                    if (camb < 0) return 'bg-red-100 border-2 border-red-300';
-                    return 'bg-green-100 border-2 border-green-300';
                 },
 
                 buscarCliente() {
@@ -567,9 +561,6 @@
                     // Si hay cliente seleccionado usamos su ID, si no, usamos '0' (Genérico)
                     const idClienteFinal = this.clienteSeleccionado ? this.clienteSeleccionado.id : '0'; 
                     
-                    // GUARDAR CAMBIO ANTES DE LIMPIAR
-                    this.cambioFinal = parseFloat(this.cambio());
-                    
                     fetch('api/guardar_venta.php', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -578,9 +569,7 @@
                             total: this.total(),
                             productos: this.carrito,
                             tipopago: this.tipoPago,
-                            formapago: this.formaPago,
-                            pagorecibido: this.pagoCon,  // Dinero recibido del cliente
-                            cambio: this.cambioFinal      // Cambio a devolver
+                            formapago: this.formaPago
                         })
                     })
                     .then(r => r.json())

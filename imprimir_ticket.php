@@ -76,32 +76,11 @@ try {
     $pdf->Cell(72, 1, "----------------------------------------", 0, 1, 'C');
 
     // Totales
+    $pdf->SetFont('Courier','B',10);
     $pdf->Cell(40, 6, "TOTAL A PAGAR:", 0, 0, 'R');
     $pdf->Cell(32, 6, "C$ " . number_format($venta['totalpago'], 2), 0, 1, 'R');
 
-    // Sección de Pago (si hay datos)
-    if (!empty($venta['pagorecibido']) && $venta['pagorecibido'] > 0) {
-        $pdf->Ln(2);
-        $pdf->Cell(72, 1, "----------------------------------------", 0, 1, 'C');
-        $pdf->SetFont('Courier','B',9);
-        $pdf->Cell(72, 4, "DETALLES DE PAGO", 0, 1, 'C');
-        $pdf->Cell(72, 1, "----------------------------------------", 0, 1, 'C');
-        
-        $pdf->SetFont('Courier','',8);
-        $pdf->Cell(40, 4, "Recibido:", 0, 0, 'R');
-        $pdf->Cell(32, 4, "C$ " . number_format($venta['pagorecibido'], 2), 0, 1, 'R');
-        
-        if (!empty($venta['cambio']) && $venta['cambio'] > 0) {
-            $pdf->SetFont('Courier','B',9);
-            $pdf->Cell(40, 5, "Cambio:", 0, 0, 'R');
-            $pdf->Cell(32, 5, "C$ " . number_format($venta['cambio'], 2), 0, 1, 'R');
-        } else {
-            $pdf->SetFont('Courier','',8);
-            $pdf->Cell(72, 4, utf8_decode("✓ Pago Exacto"), 0, 1, 'C');
-        }
-    }
-
-    // Pie mejorado
+    // Pie Mejorado
     $pdf->Ln(5);
     $pdf->SetFont('Courier','B',9);
     $pdf->Cell(72, 4, utf8_decode("¡Gracias por su compra!"), 0, 1, 'C');
