@@ -9,11 +9,15 @@ ini_set('memory_limit', '-1'); //evita el error Fatal error: Allowed memory size
 ini_set('max_execution_time', 3800); // es lo mismo que set_time_limit(300) ; AZUL-#0D89F1 NARANJA-#f29e0c
 
 ################################## CLASE LOGIN ###################################
-class Login extends Db
+class Login
 {
+    private $db;
+    private $dbh;
+
 	public function __construct()
 	{
-		parent::__construct();
+		$this->db = Db::getInstance();
+        $this->dbh = $this->db->getConnection();
 	} 	
 
 ###################### FUNCION PARA EXPIRAR SESSION POR INACTIVIDAD ####################
@@ -57,7 +61,7 @@ class Login extends Db
 #################### FUNCION PARA ACCEDER AL SISTEMA ####################
 public function Logueo()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["usuario"]) or empty($_POST["password"]))
 	{
 		echo "1";
@@ -250,7 +254,7 @@ public function Logueo()
 ########################### FUNCION PARA RECUPERAR CLAVE #############################
 public function RecuperarPassword()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["email"]))
 	{
 		echo "1";
@@ -382,7 +386,7 @@ public function RecuperarPassword()
 ########################## FUNCION PARA ACTUALIZAR PASSWORD ############################
 public function ActualizarPassword()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["dni"]))
 	{
 		echo "1";
@@ -456,7 +460,7 @@ public function ActualizarPassword()
 ######################## FUNCION ID CONFIGURACION DEL SISTEMA ########################
 public function ConfiguracionPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = " SELECT 
 	configuracion.id,
 	configuracion.documsucursal,
@@ -497,7 +501,6 @@ public function ConfiguracionPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ######################## FUNCION ID CONFIGURACION DEL SISTEMA #########################
@@ -506,7 +509,7 @@ public function ConfiguracionPorId()
 public function ActualizarConfiguracion()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["cuit"]) or empty($_POST["nomsucursal"]) or empty($_POST["tlfsucursal"]))
 	{
 		echo "1";
@@ -643,7 +646,7 @@ if (isset($_FILES['imagen3']['size'])) { $tamano_archivo = $_FILES['imagen3']['s
 ############################## FUNCION REGISTRAR USUARIOS ##############################
 public function RegistrarUsuarios()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nombres"]) or empty($_POST["usuario"]) or empty($_POST["password"]))
 	{
 		echo "1";
@@ -755,7 +758,7 @@ public function RegistrarUsuarios()
 ############################# FUNCION LISTAR USUARIOS ################################
 public function ListarUsuarios()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -765,7 +768,6 @@ public function ListarUsuarios()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else {
 
@@ -775,7 +777,6 @@ public function ListarUsuarios()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      }
 }
@@ -784,14 +785,13 @@ public function ListarUsuarios()
 ########################### FUNCION LISTAR LOGS DE USUARIOS ###########################
 public function ListarLogs()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM log";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
    }
 ########################### FUNCION LISTAR LOGS DE USUARIOS ###########################
@@ -799,7 +799,7 @@ public function ListarLogs()
 ############################ FUNCION ID USUARIOS #################################
 public function UsuariosPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM usuarios  LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE usuarios.codigo = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codigo"])));
@@ -815,7 +815,6 @@ public function UsuariosPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID USUARIOS #################################
@@ -824,7 +823,7 @@ public function UsuariosPorId()
 public function ActualizarUsuarios()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["dni"]) or empty($_POST["nombres"]) or empty($_POST["usuario"]) or empty($_POST["password"]))
 	{
 		echo "1";
@@ -952,7 +951,7 @@ public function ActualizarUsuarios()
 ############################# FUNCION ELIMINAR USUARIOS ################################
 public function EliminarUsuarios()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codigo FROM ventas WHERE codigo = ?";
@@ -995,7 +994,7 @@ public function EliminarUsuarios()
 ######################## FUNCION BUSCAR USUARIOS POR SUCURSAL ##########################
 public function BuscarUsuariosxSucursal() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 	$sql = " SELECT * FROM usuarios INNER JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE usuarios.codsucursal = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array(decrypt($_GET["codsucursal"])));
@@ -1012,7 +1011,6 @@ public function BuscarUsuariosxSucursal()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ######################### FUNCION BUSCAR USUARIOS POR SUCURSAL ##########################
@@ -1020,7 +1018,7 @@ public function BuscarUsuariosxSucursal()
 ################### FUNCION SELECCIONA USUARIO POR CODIGO Y SUCURSAL ###################
 public function BuscarUsuariosxCodigo() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 	$sql = " SELECT * FROM usuarios WHERE codigo = ? AND codsucursal = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_GET["codigo"],decrypt($_GET["codsucursal"])));
@@ -1037,7 +1035,6 @@ public function BuscarUsuariosxCodigo()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ################### FUNCION SELECCIONA USUARIO POR CODIGO Y SUCURSAL ##################
@@ -1074,7 +1071,7 @@ public function BuscarUsuariosxCodigo()
 ########################## FUNCION REGISTRAR PROVINCIAS ###############################
 public function RegistrarProvincias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["provincia"]))
 	{
 		echo "1";
@@ -1108,21 +1105,20 @@ public function RegistrarProvincias()
 ############################ FUNCION LISTAR PROVINCIAS ################################
 public function ListarProvincias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM provincias";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ########################### FUNCION LISTAR PROVINCIAS ################################
 
 ########################### FUNCION ID PROVINCIAS #################################
 public function ProvinciasPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM provincias WHERE id_provincia = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["id_provincia"])));
@@ -1138,7 +1134,6 @@ public function ProvinciasPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID PROVINCIAS #################################
@@ -1147,7 +1142,7 @@ public function ProvinciasPorId()
 public function ActualizarProvincias()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["id_provincia"]) or empty($_POST["provincia"]))
 	{
 		echo "1";
@@ -1187,7 +1182,7 @@ public function ActualizarProvincias()
 ############################ FUNCION ELIMINAR PROVINCIAS ############################
 public function EliminarProvincias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT id_provincia FROM departamentos WHERE id_provincia = ?";
@@ -1252,7 +1247,7 @@ public function EliminarProvincias()
 ############################# FUNCION REGISTRAR DEPARTAMENTOS ###########################
 public function RegistrarDepartamentos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["departamento"]) or empty($_POST["id_provincia"]))
 	{
 		echo "1";
@@ -1288,21 +1283,20 @@ public function RegistrarDepartamentos()
 ########################## FUNCION PARA LISTAR DEPARTAMENTOS ##########################
 	public function ListarDepartamentos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT * FROM departamentos LEFT JOIN provincias ON departamentos.id_provincia = provincias.id_provincia";
 		foreach ($this->dbh->query($sql) as $row)
 		{
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 ######################### FUNCION PARA LISTAR DEPARTAMENTOS ##########################
 
 ###################### FUNCION LISTAR DEPARTAMENTOS POR PROVINCIAS #####################
 	public function ListarDepartamentoXProvincias() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT * FROM departamentos WHERE id_provincia = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_GET["id_provincia"]));
@@ -1319,7 +1313,6 @@ public function RegistrarDepartamentos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ##################### FUNCION LISTAR DEPARTAMENTOS POR PROVINCIAS ######################
@@ -1327,7 +1320,7 @@ public function RegistrarDepartamentos()
 ################# FUNCION PARA SELECCIONAR DEPARTAMENTOS POR PROVINCIA #################
 	public function SeleccionaDepartamento()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT * FROM departamentos WHERE id_provincia = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_GET["id_provincia"]));
@@ -1344,7 +1337,6 @@ public function RegistrarDepartamentos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ################# FUNCION PARA SELECCIONAR DEPARTAMENTOS POR PROVINCIA ################
@@ -1352,7 +1344,7 @@ public function RegistrarDepartamentos()
 ############################ FUNCION ID DEPARTAMENTOS #################################
 public function DepartamentosPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM departamentos LEFT JOIN provincias ON departamentos.id_provincia = provincias.id_provincia WHERE departamentos.id_provincia = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["id_provincia"])));
@@ -1368,7 +1360,6 @@ public function DepartamentosPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID DEPARTAMENTOS #################################
@@ -1376,7 +1367,7 @@ public function DepartamentosPorId()
 ######################## FUNCION ACTUALIZAR DEPARTAMENTOS ############################
 public function ActualizarDepartamentos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["id_departamento"]) or empty($_POST["departamento"]) or empty($_POST["id_provincia"]))
 	{
 		echo "1";
@@ -1419,7 +1410,7 @@ public function ActualizarDepartamentos()
 ############################ FUNCION ELIMINAR DEPARTAMENTOS ###########################
 public function EliminarDepartamentos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT id_departamento FROM configuracion WHERE id_departamento = ?";
@@ -1484,7 +1475,7 @@ public function EliminarDepartamentos()
 ########################### FUNCION REGISTRAR TIPO DE DOCUMENTOS ########################
 public function RegistrarDocumentos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["documento"]) or empty($_POST["descripcion"]))
 	{
 		echo "1";
@@ -1520,21 +1511,20 @@ public function RegistrarDocumentos()
 ########################## FUNCION LISTAR TIPO DE MONEDA ################################
 public function ListarDocumentos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM documentos ORDER BY documento ASC";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ######################### FUNCION LISTAR TIPO DE DOCUMENTOS ##########################
 
 ######################### FUNCION ID TIPO DE DOCUMENTOS ###############################
 public function DocumentoPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM documentos WHERE coddocumento = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["coddocumento"])));
@@ -1550,7 +1540,6 @@ public function DocumentoPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ########################## FUNCION ID TIPO DE DOCUMENTOS #########################
@@ -1559,7 +1548,7 @@ public function DocumentoPorId()
 public function ActualizarDocumentos()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["coddocumento"]) or empty($_POST["documento"]) or empty($_POST["descripcion"]))
 	{
 		echo "1";
@@ -1602,7 +1591,7 @@ public function ActualizarDocumentos()
 ######################### FUNCION ELIMINAR TIPO DE DOCUMENTOS #########################
 public function EliminarDocumentos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT documsucursal FROM sucursales WHERE documsucursal = ?";
@@ -1668,7 +1657,7 @@ public function EliminarDocumentos()
 ############################ FUNCION REGISTRAR TIPO DE MONEDA ##########################
 public function RegistrarTipoMoneda()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["moneda"]) or empty($_POST["moneda"]) or empty($_POST["simbolo"]))
 	{
 		echo "1";
@@ -1706,21 +1695,20 @@ public function RegistrarTipoMoneda()
 ########################## FUNCION LISTAR TIPO DE MONEDA ################################
 public function ListarTipoMoneda()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM tiposmoneda";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ########################### FUNCION LISTAR TIPO DE MONEDA #########################
 
 ############################ FUNCION ID TIPO DE MONEDA #################################
 public function TipoMonedaPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM tiposmoneda WHERE codmoneda = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codmoneda"])));
@@ -1736,7 +1724,6 @@ public function TipoMonedaPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID TIPO DE MONEDA #################################
@@ -1745,7 +1732,7 @@ public function TipoMonedaPorId()
 public function ActualizarTipoMoneda()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codmoneda"]) or empty($_POST["moneda"]) or empty($_POST["siglas"]) or empty($_POST["simbolo"]))
 	{
 		echo "1";
@@ -1791,7 +1778,7 @@ public function ActualizarTipoMoneda()
 ######################### FUNCION ELIMINAR TIPO DE MONEDA ###########################
 public function EliminarTipoMoneda()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codmoneda FROM tiposcambio WHERE codmoneda = ?";
@@ -1827,7 +1814,7 @@ public function EliminarTipoMoneda()
 ##################### FUNCION BUSCAR TIPOS DE CAMBIOS POR MONEDA #######################
 public function BuscarTiposCambios()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM tiposmoneda INNER JOIN tiposcambio ON tiposmoneda.codmoneda = tiposcambio.codmoneda WHERE tiposcambio.codmoneda = ? ORDER BY tiposcambio.codcambio DESC LIMIT 1";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codmoneda"])));
@@ -1846,7 +1833,6 @@ public function BuscarTiposCambios()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ##################### FUNCION BUSCAR TIPOS DE CAMBIOS POR MONEDA #####################
@@ -1881,7 +1867,7 @@ public function BuscarTiposCambios()
 ########################## FUNCION REGISTRAR TIPO DE CAMBIO #########################
 public function RegistrarTipoCambio()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["descripcioncambio"]) or empty($_POST["montocambio"]) or empty($_POST["codmoneda"]) or empty($_POST["fechacambio"]))
 	{
 		echo "1";
@@ -1921,21 +1907,20 @@ public function RegistrarTipoCambio()
 ########################### FUNCION LISTAR TIPO DE CAMBIO ########################
 public function ListarTipoCambio()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM tiposcambio INNER JOIN tiposmoneda ON tiposcambio.codmoneda = tiposmoneda.codmoneda";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ######################### FUNCION LISTAR TIPO DE CAMBIO ################################
 
 ######################## FUNCION ID TIPO DE CAMBIO #################################
 public function TipoCambioPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM tiposcambio INNER JOIN tiposmoneda ON tiposcambio.codmoneda = tiposmoneda.codmoneda WHERE tiposcambio.codcambio = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codcambio"])));
@@ -1951,7 +1936,6 @@ public function TipoCambioPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID TIPO DE CAMBIO #################################
@@ -1959,7 +1943,7 @@ public function TipoCambioPorId()
 ####################### FUNCION ACTUALIZAR TIPO DE CAMBIO ############################
 public function ActualizarTipoCambio()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codcambio"])or empty($_POST["descripcioncambio"]) or empty($_POST["montocambio"]) or empty($_POST["codmoneda"]) or empty($_POST["fechacambio"]))
 	{
 		echo "1";
@@ -2008,7 +1992,7 @@ public function ActualizarTipoCambio()
 ########################## FUNCION ELIMINAR TIPO DE CAMBIO ###########################
 public function EliminarTipoCambio()
 {
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		    $sql = "DELETE FROM tiposcambio WHERE codcambio = ?";
@@ -2031,7 +2015,7 @@ public function EliminarTipoCambio()
 ######################## FUNCION BUSCAR PRODUCTOS POR MONEDA ###########################
 public function MonedaProductoId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if($_SESSION['acceso'] == "administradorG") {
 
 	$sql = "SELECT sucursales.codmoneda, tiposmoneda.moneda, tiposmoneda.siglas, tiposmoneda.simbolo, tiposcambio.montocambio 
@@ -2053,7 +2037,6 @@ public function MonedaProductoId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	   }
 
 	} else {
@@ -2077,7 +2060,6 @@ public function MonedaProductoId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	   }
 	}
 }
@@ -2115,7 +2097,7 @@ public function MonedaProductoId()
 ########################### FUNCION REGISTRAR MEDIOS DE PAGOS ###########################
 public function RegistrarMediosPagos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["mediopago"]))
 	{
 		echo "1";
@@ -2149,21 +2131,20 @@ public function RegistrarMediosPagos()
 ########################## FUNCION LISTAR MEDIOS DE PAGOS ##########################
 public function ListarMediosPagos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM mediospagos";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ########################### FUNCION LISTAR MEDIOS DE PAGOS ##########################
 
 ############################ FUNCION ID MEDIOS DE PAGOS #################################
 public function MediosPagosPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM mediospagos WHERE codmediopago = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codmediopago"])));
@@ -2179,7 +2160,6 @@ public function MediosPagosPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID MEDIOS DE PAGOS #################################
@@ -2187,7 +2167,7 @@ public function MediosPagosPorId()
 ##################### FUNCION ACTUALIZAR MEDIOS DE PAGOS ############################
 public function ActualizarMediosPagos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codmediopago"]) or empty($_POST["mediopago"]))
 	{
 		echo "1";
@@ -2227,7 +2207,7 @@ public function ActualizarMediosPagos()
 ########################## FUNCION ELIMINAR MEDIOS DE PAGOS #########################
 public function EliminarMediosPagos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT formapago FROM ventas WHERE formapago = ?";
@@ -2291,7 +2271,7 @@ public function EliminarMediosPagos()
 ############################ FUNCION REGISTRAR IMPUESTOS ###############################
 public function RegistrarImpuestos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nomimpuesto"]) or empty($_POST["valorimpuesto"]) or empty($_POST["statusimpuesto"]))
 	{
 		echo "1";
@@ -2344,21 +2324,20 @@ public function RegistrarImpuestos()
 ############################# FUNCION LISTAR IMPUESTOS ################################
 public function ListarImpuestos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM impuestos";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ############################# FUNCION LISTAR IMPUESTOS ################################
 
 ############################ FUNCION ID IMPUESTOS #################################
 public function ImpuestosPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM impuestos WHERE statusimpuesto = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array("ACTIVO"));
@@ -2368,7 +2347,6 @@ public function ImpuestosPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 }
 ############################ FUNCION ID IMPUESTOS #################################
 
@@ -2376,7 +2354,7 @@ public function ImpuestosPorId()
 public function ActualizarImpuestos()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codimpuesto"]) or empty($_POST["nomimpuesto"]) or empty($_POST["valorimpuesto"]) or empty($_POST["statusimpuesto"]))
 	{
 		echo "1";
@@ -2435,7 +2413,7 @@ public function ActualizarImpuestos()
 ######################### FUNCION ELIMINAR IMPUESTOS #########################
 public function EliminarImpuestos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT * FROM impuestos WHERE codimpuesto = ? AND statusimpuesto = 'ACTIVO'";
@@ -2501,7 +2479,7 @@ public function EliminarImpuestos()
 ############################ FUNCION REGISTRAR SUCURSALES ##########################
 public function RegistrarSucursales()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["dniencargado"]) or empty($_POST["nomencargado"]) or empty($_POST["cuitsucursal"]) or empty($_POST["razonsocial"]))
 	{
 		echo "1";
@@ -2600,7 +2578,7 @@ public function RegistrarSucursales()
 ######################## FUNCION LISTAR SUCURSALES ###############################
 public function ListarSucursales()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT 
 	sucursales.codsucursal,
 	sucursales.documsucursal,
@@ -2636,14 +2614,13 @@ public function ListarSucursales()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ########################## FUNCION LISTAR SUCURSALES ##########################
 
 ############################ FUNCION ID SUCURSALES #################################
 public function SucursalesPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT  
 	sucursales.codsucursal,
 	sucursales.documsucursal,
@@ -2690,7 +2667,6 @@ public function SucursalesPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID SUCURSALES #################################
@@ -2699,7 +2675,7 @@ public function SucursalesPorId()
 public function ActualizarSucursales()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codsucursal"]) or empty($_POST["dniencargado"]) or empty($_POST["nomencargado"]) or empty($_POST["cuitsucursal"]) or empty($_POST["razonsocial"]))
 	{
 		echo "1";
@@ -2821,7 +2797,7 @@ public function ActualizarSucursales()
 ########################## FUNCION ELIMINAR SUCURSALES ########################
 public function EliminarSucursales()
 {
-	self::SetNames();
+	$this->db->SetNames();
    if($_SESSION['acceso'] == "administradorG") {
 
 		$sql = "SELECT codsucursal FROM productos WHERE codsucursal = ?";
@@ -2885,7 +2861,7 @@ public function EliminarSucursales()
 ############################# FUNCION REGISTRAR FAMILIAS ###############################
 public function RegistrarFamilias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nomfamilia"]))
 	{
 		echo "1";
@@ -2919,21 +2895,20 @@ public function RegistrarFamilias()
 ########################### FUNCION LISTAR FAMILIAS ################################
 public function ListarFamilias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM familias";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ############################ FUNCION LISTAR FAMILIAS ################################
 
 ############################ FUNCION ID FAMILIAS #################################
 public function FamiliasPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM familias WHERE codfamilia = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codfamilia"])));
@@ -2949,7 +2924,6 @@ public function FamiliasPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID FAMILIAS #################################
@@ -2958,7 +2932,7 @@ public function FamiliasPorId()
 public function ActualizarFamilias()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codfamilia"]) or empty($_POST["nomfamilia"]))
 	{
 		echo "1";
@@ -2998,7 +2972,7 @@ public function ActualizarFamilias()
 ########################### FUNCION ELIMINAR FAMILIAS #################################
 public function EliminarFamilias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codfamilia FROM subfamilias WHERE codfamilia = ?";
@@ -3063,7 +3037,7 @@ public function EliminarFamilias()
 ########################### FUNCION REGISTRAR SUBFAMILIAS #########################
 public function RegistrarSubfamilias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nomsubfamilia"]) or empty($_POST["codfamilia"]))
 	{
 		echo "1";
@@ -3099,21 +3073,20 @@ public function RegistrarSubfamilias()
 ######################### FUNCION LISTAR SUBFAMILIAS ################################
 public function ListarSubfamilias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM subfamilias LEFT JOIN familias ON familias.codfamilia = subfamilias.codfamilia";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ########################### FUNCION LISTAR SUBFAMILIAS ################################
 
 ####################### FUNCION LISTAR SUBFAMILIAS POR FAMILIAS ######################
 	public function ListarSubfamilias2() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT * FROM subfamilias WHERE codfamilia = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_GET["codfamilia"]));
@@ -3130,7 +3103,6 @@ public function ListarSubfamilias()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ####################### FUNCION LISTAR SUBFAMILIAS POR FAMILIAS #########################
@@ -3138,7 +3110,7 @@ public function ListarSubfamilias()
 ############################ FUNCION ID SUBFAMILIAS #################################
 public function SubfamiliasPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM subfamilias LEFT JOIN familias ON familias.codfamilia = subfamilias.codfamilia WHERE subfamilias.codsubfamilia = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codsubfamilia"])));
@@ -3154,7 +3126,6 @@ public function SubfamiliasPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID SUBFAMILIAS #################################
@@ -3163,7 +3134,7 @@ public function SubfamiliasPorId()
 public function ActualizarSubfamilias()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codsubfamilia"]) or empty($_POST["nomsubfamilia"]) or empty($_POST["codfamilia"]))
 	{
 		echo "1";
@@ -3206,7 +3177,7 @@ public function ActualizarSubfamilias()
 ############################ FUNCION ELIMINAR SUBFAMILIAS ##########################
 public function EliminarSubfamilias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codsubfamilia FROM productos WHERE codsubfamilia = ?";
@@ -3271,7 +3242,7 @@ public function EliminarSubfamilias()
 ############################ FUNCION REGISTRAR MARCAS ###############################
 public function RegistrarMarcas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nommarca"]))
 	{
 		echo "1";
@@ -3305,21 +3276,20 @@ public function RegistrarMarcas()
 ############################## FUNCION LISTAR MARCAS ################################
 public function ListarMarcas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM marcas";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ################################## FUNCION LISTAR MARCAS ################################
 
 ############################ FUNCION ID MARCAS #################################
 public function MarcasPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM marcas WHERE codmarca = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codmarca"])));
@@ -3335,7 +3305,6 @@ public function MarcasPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID MARCAS #################################
@@ -3344,7 +3313,7 @@ public function MarcasPorId()
 public function ActualizarMarcas()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codmarca"]) or empty($_POST["nommarca"]))
 	{
 		echo "1";
@@ -3384,7 +3353,7 @@ public function ActualizarMarcas()
 ########################### FUNCION ELIMINAR MARCAS #################################
 public function EliminarMarcas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codmarca FROM modelos WHERE codmarca = ?";
@@ -3449,7 +3418,7 @@ public function EliminarMarcas()
 ########################### FUNCION REGISTRAR MODELOS ###############################
 public function RegistrarModelos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nommodelo"]) or empty($_POST["codmarca"]))
 	{
 		echo "1";
@@ -3485,21 +3454,20 @@ public function RegistrarModelos()
 ############################ FUNCION LISTAR MODELOS ################################
 public function ListarModelos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM modelos INNER JOIN marcas ON marcas.codmarca = modelos.codmarca";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ############################## FUNCION LISTAR MODELOS ################################
 
 ########################## FUNCION LISTAR MODELOS POR MARCAS ##########################
  public function ListarModelosxMarcas() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT * FROM modelos WHERE codmarca = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_GET["codmarca"]));
@@ -3516,7 +3484,6 @@ public function ListarModelos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################# FUNCION LISTAR MODELOS POR MARCAS #########################
@@ -3524,7 +3491,7 @@ public function ListarModelos()
 ############################ FUNCION ID MODELOS #################################
 public function ModelosPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM modelos LEFT JOIN marcas ON marcas.codmarca = modelos.codmarca WHERE modelos.codmodelo = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codmodelo"])));
@@ -3540,7 +3507,6 @@ public function ModelosPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID MODELOS #################################
@@ -3548,7 +3514,7 @@ public function ModelosPorId()
 ############################ FUNCION ACTUALIZAR MODELOS ############################
 public function ActualizarModelos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codmodelo"]) or empty($_POST["nommodelo"]) or empty($_POST["codmarca"]))
 	{
 		echo "1";
@@ -3591,7 +3557,7 @@ public function ActualizarModelos()
 ############################ FUNCION ELIMINAR MODELOS ############################
 public function EliminarModelos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codmodelo FROM productos WHERE codmodelo = ?";
@@ -3656,7 +3622,7 @@ public function EliminarModelos()
 ########################### FUNCION REGISTRAR PRESENTACIONES ##########################
 public function RegistrarPresentaciones()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nompresentacion"]))
 	{
 		echo "1";
@@ -3690,21 +3656,20 @@ public function RegistrarPresentaciones()
 ########################### FUNCION LISTAR PRESENTACIONES ############################
 public function ListarPresentaciones()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM presentaciones";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ########################### FUNCION LISTAR PRESENTACIONES #########################
 
 ############################ FUNCION ID PRESENTACIONES #################################
 public function PresentacionesPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM presentaciones WHERE codpresentacion = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codpresentacion"])));
@@ -3720,7 +3685,6 @@ public function PresentacionesPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID PRESENTACIONES #################################
@@ -3728,7 +3692,7 @@ public function PresentacionesPorId()
 ######################### FUNCION ACTUALIZAR PRESENTACIONES #######################
 public function ActualizarPresentaciones()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codpresentacion"]) or empty($_POST["nompresentacion"]))
 	{
 		echo "1";
@@ -3768,7 +3732,7 @@ public function ActualizarPresentaciones()
 ########################### FUNCION ELIMINAR PRESENTACIONES ############################
 public function EliminarPresentaciones()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codpresentacion FROM productos WHERE codpresentacion = ?";
@@ -3833,7 +3797,7 @@ public function EliminarPresentaciones()
 ########################### FUNCION REGISTRAR COLORES ###############################
 public function RegistrarColores()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nomcolor"]))
 	{
 		echo "1";
@@ -3867,21 +3831,20 @@ public function RegistrarColores()
 ########################## FUNCION LISTAR COLORES ################################
 public function ListarColores()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM colores";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ########################### FUNCION LISTAR COLORES ################################
 
 ############################ FUNCION ID COLORES #################################
 public function ColoresPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM colores WHERE codcolor = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codcolor"])));
@@ -3897,7 +3860,6 @@ public function ColoresPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID COLORES #################################
@@ -3906,7 +3868,7 @@ public function ColoresPorId()
 public function ActualizarColores()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codcolor"]) or empty($_POST["nomcolor"]))
 	{
 		echo "1";
@@ -3946,7 +3908,7 @@ public function ActualizarColores()
 ########################### FUNCION ELIMINAR COLORES ###########################
 public function EliminarColores()
 {
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codcolor FROM productos WHERE codcolor = ?";
@@ -4011,7 +3973,7 @@ public function EliminarColores()
 ########################## FUNCION REGISTRAR ORIGENES ###############################
 public function RegistrarOrigenes()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nomorigen"]))
 	{
 		echo "1";
@@ -4045,21 +4007,20 @@ public function RegistrarOrigenes()
 ############################ FUNCION LISTAR ORIGENES ################################
 public function ListarOrigenes()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM origenes";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  }
 ############################ FUNCION LISTAR ORIGENES ################################
 
 ############################ FUNCION ID ORIGENES #################################
 public function OrigenesPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM origenes WHERE codorigen = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codorigen"])));
@@ -4075,7 +4036,6 @@ public function OrigenesPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID ORIGENES #################################
@@ -4084,7 +4044,7 @@ public function OrigenesPorId()
 public function ActualizarOrigenes()
 {
 
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codorigen"]) or empty($_POST["nomorigen"]))
 	{
 		echo "1";
@@ -4124,7 +4084,7 @@ public function ActualizarOrigenes()
 ########################### FUNCION ELIMINAR ORIGENES ##############################
 public function EliminarOrigenes()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codorigen FROM productos WHERE codorigen = ?";
@@ -4189,7 +4149,7 @@ public function EliminarOrigenes()
 ############################### FUNCION CARGAR CLIENTES ##############################
 	public function CargarClientes()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_FILES["sel_file"]))
 		{
 			echo "1";
@@ -4261,7 +4221,7 @@ public function EliminarOrigenes()
 ############################ FUNCION REGISTRAR CLIENTES ###############################
 	public function RegistrarClientes()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["dnicliente"]) or empty($_POST["nomcliente"]) or empty($_POST["direccliente"]))
 		{
 			echo "1";
@@ -4335,7 +4295,7 @@ public function EliminarOrigenes()
 ############################ FUNCION LISTAR CLIENTES ################################
 	public function ListarClientes()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 	$sql = "SELECT
 		clientes.codcliente,
 		clientes.documcliente,
@@ -4361,14 +4321,13 @@ public function EliminarOrigenes()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 }
 ######################### FUNCION LISTAR CLIENTES ################################
 
 ######################### FUNCION ID CLIENTES #################################
 	public function ClientesPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		clientes.codcliente,
 		clientes.documcliente,
@@ -4403,7 +4362,6 @@ public function EliminarOrigenes()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID CLIENTES #################################
@@ -4412,7 +4370,7 @@ public function EliminarOrigenes()
 	public function ActualizarClientes()
 	{
 		
-	self::SetNames();
+	$this->db->SetNames();
 		if(empty($_POST["codcliente"]) or empty($_POST["dnicliente"]) or empty($_POST["nomcliente"]) or empty($_POST["direccliente"]))
 		{
 			echo "1";
@@ -4478,7 +4436,7 @@ public function EliminarOrigenes()
 ########################### FUNCION ELIMINAR CLIENTES #################################
 	public function EliminarClientes()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codcliente FROM ventas WHERE codcliente = ?";
@@ -4543,7 +4501,7 @@ public function EliminarOrigenes()
 ########################## FUNCION CARGAR PROVEEDORES ###############################
 	public function CargarProveedores()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_FILES["sel_file"]))
 		{
 			echo "1";
@@ -4615,7 +4573,7 @@ public function EliminarOrigenes()
 ############################ FUNCION REGISTRAR PROVEEDORES ##########################
 	public function RegistrarProveedores()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["cuitproveedor"]) or empty($_POST["nomproveedor"]) or empty($_POST["direcproveedor"]))
 		{
 			echo "1";
@@ -4689,7 +4647,7 @@ public function EliminarOrigenes()
 ########################### FUNCION LISTAR PROVEEDORES ################################
 	public function ListarProveedores()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 	    $sql = "SELECT
 		proveedores.codproveedor,
 		proveedores.documproveedor,
@@ -4715,14 +4673,13 @@ public function EliminarOrigenes()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 }
 ########################### FUNCION LISTAR PROVEEDORES ################################
 
 ########################### FUNCION ID PROVEEDORES #################################
 	public function ProveedoresPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		proveedores.codproveedor,
 		proveedores.documproveedor,
@@ -4757,7 +4714,6 @@ public function EliminarOrigenes()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID PROVEEDORES #################################
@@ -4765,7 +4721,7 @@ public function EliminarOrigenes()
 ############################ FUNCION ACTUALIZAR PROVEEDORES ############################
 	public function ActualizarProveedores()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if(empty($_POST["codproveedor"]) or empty($_POST["cuitproveedor"]) or empty($_POST["nomproveedor"]) or empty($_POST["direcproveedor"]))
 		{
 			echo "1";
@@ -4831,7 +4787,7 @@ public function EliminarOrigenes()
 ########################## FUNCION ELIMINAR PROVEEDORES #################################
 	public function EliminarProveedores()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codproveedor FROM productos WHERE codproveedor = ?";
@@ -4898,7 +4854,7 @@ public function EliminarOrigenes()
 ############################ FUNCION REGISTRAR PEDIDOS #############################
 	public function RegistrarPedidos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codsucursal"]) or empty($_POST["codproveedor"]) or empty($_POST["fecharegistro"]) or empty($_POST["observacionpedido"]))
 		{
 			echo "1";
@@ -4995,7 +4951,7 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 ########################### FUNCION LISTAR PEDIDOS ################################
 public function ListarPedidos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -5031,7 +4987,6 @@ public function ListarPedidos()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else {
 
@@ -5067,7 +5022,6 @@ public function ListarPedidos()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      }
 }
@@ -5076,7 +5030,7 @@ public function ListarPedidos()
 ############################ FUNCION ID PEDIDOS #################################
 	public function PedidosPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 		pedidos.codpedido, 
 		pedidos.codproveedor,
@@ -5137,7 +5091,6 @@ public function ListarPedidos()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID PEDIDOS #################################
@@ -5145,7 +5098,7 @@ public function ListarPedidos()
 ########################### FUNCION VER DETALLES PEDIDOS ###########################
 public function VerDetallesPedidos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT * FROM detallepedidos INNER JOIN marcas ON detallepedidos.codmarca = marcas.codmarca LEFT JOIN modelos ON detallepedidos.codmodelo = modelos.codmodelo WHERE detallepedidos.codpedido = ? AND detallepedidos.codsucursal = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array(decrypt($_GET["codpedido"]),decrypt($_GET["codsucursal"])));
@@ -5156,14 +5109,13 @@ public function VerDetallesPedidos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 ########################### FUNCION VER DETALLES PEDIDOS ############################
 
 ########################### FUNCION ACTUALIZAR PEDIDOS #############################
 	public function ActualizarPedidos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codsucursal"]) or empty($_POST["codproveedor"]) or empty($_POST["fechapedido"]) or empty($_POST["observacionpedido"]))
 		{
 			echo "1";
@@ -5241,7 +5193,7 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 ########################### FUNCION ACTUALIZAR PEDIDOS ############################
 	public function AgregarDetallesPedidos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codproveedor"]) or empty($_POST["fechapedido"]) or empty($_POST["observacionpedido"]))
 		{
 			echo "1";
@@ -5353,7 +5305,7 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 ########################## FUNCION ELIMINAR DETALLES PEDIDOS #########################
 	public function EliminarDetallesPedidos()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT * FROM detallepedidos where codpedido = ? AND codsucursal = ?";
@@ -5389,7 +5341,7 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 ######################### FUNCION ELIMINAR PEDIDOS ###############################
 	public function EliminarPedidos()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 			$sql = "DELETE FROM pedidos WHERE codpedido = ? AND codsucursal = ?";
@@ -5422,7 +5374,7 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 ###################### FUNCION BUSQUEDA PEDIDOS POR PROVEEDORES ######################
 	public function BuscarPedidosxProveedor() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 		pedidos.codpedido, 
 		pedidos.codproveedor, 
@@ -5475,7 +5427,6 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA PEDIDOS POR PROVEEDORES ######################
@@ -5512,7 +5463,7 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 ############################### FUNCION CARGAR PRODUCTOS ##############################
 	public function CargarProductos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_FILES["sel_file"]))
 		{
 			echo "1";
@@ -5664,7 +5615,7 @@ echo "<script>window.open('reportepdf?codpedido=".encrypt($codpedido)."&codsucur
 ########################### FUNCION REGISTRAR PRODUCTOS ###############################
 	public function RegistrarProductos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codproducto"]) or empty($_POST["producto"]) or empty($_POST["codfamilia"]))
 		{
 			echo "1";
@@ -5815,7 +5766,7 @@ if (move_uploaded_file($_FILES['imagen']['tmp_name'], "fotos/productos/".$nombre
 ########################### FUNCION LISTAR PRODUCTOS ################################
 	public function ListarProductos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
         $sql = "SELECT
 		productos.idproducto,
 		productos.codproducto,
@@ -5877,14 +5828,13 @@ if (move_uploaded_file($_FILES['imagen']['tmp_name'], "fotos/productos/".$nombre
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 }
 ########################## FUNCION LISTAR PRODUCTOS ################################
 
 ########################### FUNCION LISTAR PRODUCTOS EN STOCK OPTIMO ################################
 	public function ListarProductosOptimo()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 		
@@ -5949,7 +5899,6 @@ if (move_uploaded_file($_FILES['imagen']['tmp_name'], "fotos/productos/".$nombre
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 } 
 else {
 
@@ -6014,7 +5963,6 @@ else {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
   }
 }
 ########################## FUNCION LISTAR PRODUCTOS EN STOCK OPTIMO ################################
@@ -6022,7 +5970,7 @@ else {
 ########################### FUNCION LISTAR PRODUCTOS EN STOCK MEDIO ################################
 	public function ListarProductosMedio()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 		
@@ -6087,7 +6035,6 @@ else {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 } 
 else {
 
@@ -6152,7 +6099,6 @@ else {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
   }
 }
 ########################## FUNCION LISTAR PRODUCTOS EN STOCK MEDIO ################################
@@ -6160,7 +6106,7 @@ else {
 ########################### FUNCION LISTAR PRODUCTOS EN STOCK MINIMO ################################
 	public function ListarProductosMinimo()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 		
@@ -6225,7 +6171,6 @@ else {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 } 
 else {
 
@@ -6290,7 +6235,6 @@ else {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
   }
 }
 ########################## FUNCION LISTAR PRODUCTOS EN STOCK MINIMO ################################
@@ -6298,7 +6242,7 @@ else {
 ###################### FUNCION LISTAR PRECIOS POR CODIGO DE PRODUCTO #####################
 public function BuscarPrecioxCodigo() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT GROUP_CONCAT('P. MENOR', '_', precioxmenor, '|', 'P. MAYOR', '_', precioxmayor, '|', 'P.PUBLICO', '_', precioxpublico SEPARATOR '<br>') AS precioventa FROM productos WHERE codproducto = ? AND codsucursal = '".limpiar($_SESSION["codsucursal"])."'";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_GET["codproducto"]));
@@ -6314,7 +6258,6 @@ public function BuscarPrecioxCodigo()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 }
 ##################### FUNCION LISTAR PRECIOS POR CODIGO PRODUCTO ######################
@@ -6322,7 +6265,7 @@ public function BuscarPrecioxCodigo()
 ############################# FUNCION LISTAR PRODUCTOS EN VENTANA MODAL ################################
 	public function ListarProductosModal()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 $sql = "SELECT * FROM productos 
         LEFT JOIN familias ON productos.codfamilia=familias.codfamilia
         LEFT JOIN marcas ON productos.codmarca=marcas.codmarca 
@@ -6333,14 +6276,13 @@ $sql = "SELECT * FROM productos
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 }
 ########################## FUNCION LISTAR PRODUCTOS EN VENTANA MODAL ################################
 
 ########################## FUNCION LISTAR CODIGO DE BARRAS #########################
 	public function ListarCodigoBarra()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -6350,7 +6292,6 @@ $sql = "SELECT * FROM productos
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else {
 
@@ -6360,7 +6301,6 @@ $sql = "SELECT codproducto, codigobarra FROM productos WHERE codsucursal = '".li
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
    }
 }
 ############################ FUNCION LISTAR CODIGO DE BARRAS #########################
@@ -6368,7 +6308,7 @@ $sql = "SELECT codproducto, codigobarra FROM productos WHERE codsucursal = '".li
 ############################ FUNCION ID PRODUCTOS #################################
 	public function ProductosPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		productos.idproducto,
 		productos.codproducto,
@@ -6437,7 +6377,6 @@ $sql = "SELECT codproducto, codigobarra FROM productos WHERE codsucursal = '".li
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID PRODUCTOS #################################
@@ -6445,7 +6384,7 @@ $sql = "SELECT codproducto, codigobarra FROM productos WHERE codsucursal = '".li
 ############################ FUNCION ACTUALIZAR PRODUCTOS ############################
 	public function ActualizarProductos()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if(empty($_POST["codproducto"]) or empty($_POST["producto"]) or empty($_POST["codfamilia"]))
 		{
 			echo "1";
@@ -6585,7 +6524,7 @@ if (move_uploaded_file($_FILES['imagen']['tmp_name'], "fotos/productos/".$nombre
 ########################## FUNCION AJUSTAR STOCK DE PRODUCTOS ###########################
 	public function ActualizarAjuste()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if(empty($_POST["codproducto"]) or empty($_POST["stockteorico"]) or empty($_POST["motivoajuste"]))
 		{
 			echo "1";
@@ -6616,7 +6555,7 @@ if (move_uploaded_file($_FILES['imagen']['tmp_name'], "fotos/productos/".$nombre
 ########################## FUNCION ELIMINAR PRODUCTOS ###########################
 	public function EliminarProductos()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codproducto FROM detalleventas WHERE codproducto = ? AND codsucursal = ?";
@@ -6669,7 +6608,7 @@ if (move_uploaded_file($_FILES['imagen']['tmp_name'], "fotos/productos/".$nombre
 ###################### FUNCION BUSCAR PRODUCTOS POR SUCURSAL #########################
 public function BuscarProductosxSucursal() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		productos.idproducto,
 		productos.codproducto,
@@ -6743,7 +6682,6 @@ public function BuscarProductosxSucursal()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ######################## FUNCION BUSCAR PRODUCTOS POR SUCURSAL #####################
@@ -6751,7 +6689,7 @@ public function BuscarProductosxSucursal()
 ###################### FUNCION BUSCAR PRODUCTOS VENDIDOS #########################
 public function BuscarProductosVendidos() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
        $sql ="SELECT 
        productos.codproducto, 
        productos.producto, 
@@ -6798,7 +6736,6 @@ public function BuscarProductosVendidos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################### FUNCION PRODUCTOS VENDIDOS ###############################
@@ -6806,7 +6743,7 @@ public function BuscarProductosVendidos()
 ###################### FUNCION BUSCAR PRODUCTOS VENDIDOS POR VENDEDOR #########################
 public function BuscarProductosxVendedor() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
        $sql ="SELECT 
        productos.codproducto, 
        productos.producto, 
@@ -6857,7 +6794,6 @@ public function BuscarProductosxVendedor()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################### FUNCION PRODUCTOS VENDIDOS POR VENDEDOR ###############################
@@ -6865,7 +6801,7 @@ public function BuscarProductosxVendedor()
 ######################## FUNCION DETALLE PRODUCTO KARDEX #########################
 	public function DetalleProductosKardex()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		productos.idproducto,
 		productos.codproducto,
@@ -6935,7 +6871,6 @@ public function BuscarProductosxVendedor()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ######################## FUNCION DETALLE PRODUCTO KARDEX #########################
@@ -6943,7 +6878,7 @@ public function BuscarProductosxVendedor()
 ######################## FUNCION BUSCA KARDEX PRODUCTOS ##########################
 public function BuscarKardexProducto() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 		$sql ="SELECT * FROM kardex WHERE codproducto = ? AND codsucursal = ?";
         $stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_GET["codproducto"], decrypt($_GET["codsucursal"])));
@@ -6963,7 +6898,6 @@ public function BuscarKardexProducto()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ######################## FUNCION BUSCA KARDEX PRODUCTOS #########################
@@ -6971,7 +6905,7 @@ public function BuscarKardexProducto()
 ########################### FUNCION LISTAR KARDEX VALORIZADO ################################
 	public function ListarKardexValorizado()
 	{
-		self::SetNames();
+		$this->db->SetNames();
         
 
 	if ($_SESSION['acceso'] == "administradorG") {
@@ -7037,7 +6971,6 @@ public function BuscarKardexProducto()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else {
 
@@ -7102,7 +7035,6 @@ public function BuscarKardexProducto()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
    }
 }
 ########################## FUNCION LISTAR KARDEX VALORIZADO ################################
@@ -7110,7 +7042,7 @@ public function BuscarKardexProducto()
 ###################### FUNCION KARDEX POR FECHAS Y VENDEDOR #########################
 public function BuscarKardexValorizadoxFechas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
        $sql ="SELECT 
        productos.codproducto, 
        productos.producto, 
@@ -7162,7 +7094,6 @@ public function BuscarKardexValorizadoxFechas()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################### FUNCION KARDEX POR FECHAS Y VENDEDOR ###############################
@@ -7205,7 +7136,7 @@ public function BuscarKardexValorizadoxFechas()
 ############################## FUNCION REGISTRAR TRASPASOS ############################
 	public function RegistrarTraspasos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["envia"]) or empty($_POST["recibe"]) or empty($_POST["codsucursal"]) or empty($_POST["fechatraspaso"]))
 		{
 			echo "1";
@@ -7614,7 +7545,7 @@ echo "<span class='fa fa-check-square-o'></span> EL TRASPASO DE PRODUCTOS HA SID
 ############################## FUNCION LISTAR TRASPASOS ################################
 public function ListarTraspasos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -7659,7 +7590,6 @@ public function ListarTraspasos()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
 	} else {
 
@@ -7705,7 +7635,6 @@ public function ListarTraspasos()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      }
 }
@@ -7714,7 +7643,7 @@ public function ListarTraspasos()
 ############################ FUNCION ID TRASPASOS #################################
 	public function TraspasosPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 	traspasos.idtraspaso, 
 	traspasos.codtraspaso, 
@@ -7791,7 +7720,6 @@ public function ListarTraspasos()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID TRASPASOS #################################
@@ -7799,7 +7727,7 @@ public function ListarTraspasos()
 ############################ FUNCION VER DETALLES TRASPASOS ###########################
 public function VerDetallesTraspasos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		detallestraspasos.coddetalletraspaso,
 		detallestraspasos.codtraspaso,
@@ -7831,14 +7759,13 @@ public function VerDetallesTraspasos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 ############################ FUNCION VER DETALLES TRASPASOS ############################
 
 ############################ FUNCION ACTUALIZAR TRASPASOS ##########################
 	public function ActualizarTraspasos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codtraspaso"]) or empty($_POST["envia"]) or empty($_POST["recibe"]) or empty($_POST["codsucursal"]) or empty($_POST["fechatraspaso"]))
 		{
 			echo "1";
@@ -8052,7 +7979,7 @@ echo "<span class='fa fa-check-square-o'></span> EL TRASPASO DE PRODUCTOS HA SID
 ######################### FUNCION AGREGAR DETALLES TRASPASOS #########################
 	public function AgregarDetallesTraspasos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codtraspaso"]) or empty($_POST["envia"]) or empty($_POST["recibe"]) or empty($_POST["codsucursal"]) or empty($_POST["fechatraspaso"]))
 		{
 			echo "1";
@@ -8508,7 +8435,7 @@ echo "<span class='fa fa-check-square-o'></span> LOS DETALLES DE PRODUCTOS FUERO
 ########################## FUNCION ELIMINAR DETALLES TRASPASOS ##########################
 	public function EliminarDetallesTraspasos()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION["acceso"]=="administradorS") {
 
         ############ CONSULTO DATOS DE TRASPASO ##############
@@ -8757,7 +8684,7 @@ echo "<span class='fa fa-check-square-o'></span> LOS DETALLES DE PRODUCTOS FUERO
 ########################## FUNCION ELIMINAR TRASPASOS #############################
 	public function EliminarTraspasos()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION["acceso"]=="administradorS") {
 
         ############ CONSULTO DATOS DE TRASPASO ##############
@@ -8938,7 +8865,7 @@ echo "<span class='fa fa-check-square-o'></span> LOS DETALLES DE PRODUCTOS FUERO
 ####################### FUNCION BUSQUEDA TRASPASOS POR SUCURSAL ######################
 	public function BuscarTraspasosxSucursal() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql ="SELECT 
 	traspasos.idtraspaso, 
 	traspasos.codtraspaso, 
@@ -8995,7 +8922,6 @@ echo "<span class='fa fa-check-square-o'></span> LOS DETALLES DE PRODUCTOS FUERO
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA TRASPASOS POR SUCURSAL ########################
@@ -9003,7 +8929,7 @@ echo "<span class='fa fa-check-square-o'></span> LOS DETALLES DE PRODUCTOS FUERO
 ####################### FUNCION BUSQUEDA TRASPASOS POR FECHAS #######################
 	public function BuscarTraspasosxFechas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql ="SELECT 
 	traspasos.idtraspaso, 
 	traspasos.codtraspaso, 
@@ -9062,7 +8988,6 @@ echo "<span class='fa fa-check-square-o'></span> LOS DETALLES DE PRODUCTOS FUERO
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA TRASPASOS POR FECHAS ###########################
@@ -9097,7 +9022,7 @@ echo "<span class='fa fa-check-square-o'></span> LOS DETALLES DE PRODUCTOS FUERO
 ############################# FUNCION REGISTRAR COMPRAS #############################
 	public function RegistrarCompras()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 	if(empty($_POST["codsucursal"]) or empty($_POST["codcompra"]) or empty($_POST["fechaemision"]) or empty($_POST["fecharecepcion"]) or empty($_POST["codproveedor"]))
 		{
 			echo "1";
@@ -9357,7 +9282,7 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 ######################### FUNCION LISTAR COMPRAS ################################
 public function ListarCompras()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -9404,7 +9329,6 @@ public function ListarCompras()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else {
 
@@ -9451,7 +9375,6 @@ public function ListarCompras()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      }
 }
@@ -9460,7 +9383,7 @@ public function ListarCompras()
 ########################### FUNCION LISTAR CUENTAS POR PAGAR #######################
 public function ListarCuentasxPagar()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -9506,7 +9429,6 @@ public function ListarCuentasxPagar()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else {
 
@@ -9552,7 +9474,6 @@ public function ListarCuentasxPagar()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      }
 }
@@ -9561,7 +9482,7 @@ public function ListarCuentasxPagar()
 ############################ FUNCION PARA PAGAR COMPRAS ############################
 public function RegistrarPagoCompra()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 		if(empty($_POST["codproveedor"]) or empty($_POST["codcompra"]) or empty($_POST["montoabono"]))
 		{
@@ -9623,7 +9544,7 @@ echo "<span class='fa fa-check-square-o'></span> EL ABONO AL CR&Eacute;DITO DE C
 ########################### FUNCION VER DETALLES COMPRAS #######################
 public function VerDetallesAbonosCompras()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM abonoscreditoscompras INNER JOIN compras ON abonoscreditoscompras.codcompra = compras.codcompra  WHERE abonoscreditoscompras.codcompra = ? AND abonoscreditoscompras.codsucursal = ?";	
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->bindValue(1, trim(decrypt($_GET["codcompra"])));
@@ -9641,7 +9562,6 @@ public function VerDetallesAbonosCompras()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################## FUNCION VER DETALLES COMPRAS ###########################
@@ -9649,7 +9569,7 @@ public function VerDetallesAbonosCompras()
 ############################ FUNCION ID COMPRAS #################################
 	public function ComprasPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = " SELECT 
 		compras.idcompra, 
 		compras.codcompra,
@@ -9730,7 +9650,6 @@ public function VerDetallesAbonosCompras()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID COMPRAS #################################
@@ -9738,7 +9657,7 @@ public function VerDetallesAbonosCompras()
 ############################ FUNCION VER DETALLES COMPRAS ############################
 public function VerDetallesCompras()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		detallecompras.coddetallecompra,
 		detallecompras.codcompra,
@@ -9779,14 +9698,13 @@ public function VerDetallesCompras()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 ############################ FUNCION VER DETALLES COMPRAS ##############################
 
 ############################## FUNCION ACTUALIZAR COMPRAS #############################
 	public function ActualizarCompras()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codsucursal"]) or empty($_POST["codcompra"]) or empty($_POST["fechaemision"]) or empty($_POST["fecharecepcion"]) or empty($_POST["codproveedor"]))
 		{
 			echo "1";
@@ -9984,7 +9902,7 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 ########################## FUNCION ELIMINAR DETALLES COMPRAS ########################
 	public function EliminarDetallesCompras()
 	{
-	    self::SetNames();
+	    $this->db->SetNames();
 		if ($_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT * FROM detallecompras WHERE codcompra = ? AND codsucursal = ?";
@@ -10157,7 +10075,7 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 ####################### FUNCION ELIMINAR COMPRAS #################################
 	public function EliminarCompras()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION["acceso"]=="administradorS") {
 
 	$sql = "SELECT * FROM detallecompras WHERE codcompra = '".limpiar(decrypt($_GET["codcompra"]))."' AND codsucursal = '".limpiar(decrypt($_GET["codsucursal"]))."'";
@@ -10265,7 +10183,7 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 ##################### FUNCION BUSQUEDA COMPRAS POR PROVEEDORES ###################
 	public function BuscarComprasxProveedor() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 		compras.codcompra,
 		compras.codproveedor, 
@@ -10334,7 +10252,6 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ################### FUNCION BUSQUEDA COMPRAS POR PROVEEDORES ###################
@@ -10342,7 +10259,7 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 ###################### FUNCION BUSQUEDA COMPRAS POR FECHAS ###########################
 	public function BuscarComprasxFechas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql ="SELECT 
 		compras.codcompra,
 		compras.codproveedor, 
@@ -10414,7 +10331,6 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA COMPRAS POR FECHAS ###########################
@@ -10422,7 +10338,7 @@ echo "<script>window.open('reportepdf?codcompra=".encrypt($codcompra)."&codsucur
 ###################### FUNCION BUSQUEDA CREDITOS POR PROVEEDOR ###########################
 public function BuscarCreditosxProveedor() 
 	{
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT 
 	compras.codcompra, 
 	compras.totalpagoc, 
@@ -10476,7 +10392,6 @@ public function BuscarCreditosxProveedor()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA CREDITOS POR PROVEEDOR ###########################
@@ -10484,7 +10399,7 @@ public function BuscarCreditosxProveedor()
 ###################### FUNCION BUSQUEDA CREDITOS DE COMPRAS POR FECHAS ###########################
 public function BuscarCreditosComprasxFechas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 	compras.codcompra, 
 	compras.totalpagoc, 
@@ -10540,7 +10455,6 @@ public function BuscarCreditosComprasxFechas()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA CREDITOS DE COMPRAS POR FECHAS ###########################
@@ -10580,7 +10494,7 @@ public function BuscarCreditosComprasxFechas()
 ########################### FUNCION REGISTRAR COTIZACIONES ##########################
 	public function RegistrarCotizaciones()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codsucursal"]) or empty($_POST["txtTotal"]))
 		{
 			echo "1";
@@ -10708,7 +10622,7 @@ echo "<script>window.open('reportepdf?codcotizacion=".encrypt($codcotizacion)."&
 ####################### FUNCION LISTAR COTIZACIONES ################################
 public function ListarCotizaciones()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -10753,7 +10667,6 @@ public function ListarCotizaciones()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else if($_SESSION["acceso"] == "cajero") {
 
@@ -10798,7 +10711,6 @@ public function ListarCotizaciones()
 			$this->p[] = $row;
 		}
 		    return $this->p;
-			$this->dbh=null;
 
 	} else {
 
@@ -10843,7 +10755,6 @@ public function ListarCotizaciones()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
     }
 }
@@ -10852,7 +10763,7 @@ public function ListarCotizaciones()
 ############################ FUNCION ID COTIZACIONES #################################
 	public function CotizacionesPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = " SELECT 
 		cotizaciones.idcotizacion, 
 		cotizaciones.codcotizacion,
@@ -10920,7 +10831,6 @@ public function ListarCotizaciones()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID COTIZACIONES #################################
@@ -10928,7 +10838,7 @@ public function ListarCotizaciones()
 ######################## FUNCION VER DETALLES COTIZACIONES ############################
 public function VerDetallesCotizaciones()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT
 		detallecotizaciones.coddetallecotizacion,
 		detallecotizaciones.codcotizacion,
@@ -10960,14 +10870,13 @@ public function VerDetallesCotizaciones()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 ##################### FUNCION VER DETALLES COTIZACIONES #########################
 
 ######################## FUNCION ACTUALIZAR COTIZACIONES #######################
 	public function ActualizarCotizaciones()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codcotizacion"]) or empty($_POST["codsucursal"]))
 		{
 			echo "1";
@@ -11113,7 +11022,7 @@ echo "<script>window.open('reportepdf?codcotizacion=".encrypt($codcotizacion)."&
 ####################### FUNCION AGREGAR DETALLES COTIZACIONES ########################
 	public function AgregarDetallesCotizaciones()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codcotizacion"]) or empty($_POST["codsucursal"]))
 		{
 			echo "1";
@@ -11294,7 +11203,7 @@ echo "<script>window.open('reportepdf?codcotizacion=".encrypt($codcotizacion)."&
 ######################## FUNCION ELIMINAR DETALLES COTIZACIONES #######################
 	public function EliminarDetallesCotizaciones()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT * FROM detallecotizaciones WHERE codcotizacion = ? AND codsucursal = ?";
@@ -11393,7 +11302,7 @@ echo "<script>window.open('reportepdf?codcotizacion=".encrypt($codcotizacion)."&
 ####################### FUNCION ELIMINAR COTIZACIONES #################################
 	public function EliminarCotizaciones()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION["acceso"]=="administradorS") {
 
 			$sql = "DELETE FROM cotizaciones WHERE codcotizacion = ? AND codsucursal = ?";
@@ -11426,7 +11335,7 @@ echo "<script>window.open('reportepdf?codcotizacion=".encrypt($codcotizacion)."&
 ####################### FUNCION PROCESAR COTIZACIONES A VENTA #################################
 public function ProcesarCotizaciones()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 		$sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.codcaja INNER JOIN usuarios ON cajas.codigo = usuarios.codigo WHERE usuarios.codigo = ? AND arqueocaja.statusarqueo = 1";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($_SESSION["codigo"]));
@@ -11913,7 +11822,7 @@ echo "<script>window.open('reportepdf?codventa=".encrypt($codventa)."&codsucursa
 ###################### FUNCION BUSQUEDA COTIZACIONES POR FECHAS ####################
 	public function BuscarCotizacionesxFechas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql ="SELECT 
 		cotizaciones.idcotizacion, 
 		cotizaciones.codcotizacion,
@@ -11979,7 +11888,6 @@ echo "<script>window.open('reportepdf?codventa=".encrypt($codventa)."&codsucursa
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ################### FUNCION BUSQUEDA COTIZACIONES POR FECHAS ###################
@@ -11987,7 +11895,7 @@ echo "<script>window.open('reportepdf?codventa=".encrypt($codventa)."&codsucursa
 ###################### FUNCION BUSCAR PRODUCTOS COTIZADOS #########################
 public function BuscarProductosCotizados() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
        $sql ="SELECT 
        productos.codproducto, 
        productos.codmarca,  
@@ -12034,7 +11942,6 @@ public function BuscarProductosCotizados()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################### FUNCION PRODUCTOS COTIZADOS ###############################
@@ -12042,7 +11949,7 @@ public function BuscarProductosCotizados()
 ###################### FUNCION BUSCAR PRODUCTOS COTIZADOS POR VENDEDOR #########################
 public function BuscarCotizacionesxVendedor() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
        $sql ="SELECT 
        productos.codproducto, 
        productos.codmarca,  
@@ -12094,7 +12001,6 @@ public function BuscarCotizacionesxVendedor()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################### FUNCION PRODUCTOS COTIZADOS POR VENDEDOR ###############################
@@ -12132,7 +12038,7 @@ public function BuscarCotizacionesxVendedor()
 ######################### FUNCION REGISTRAR CAJAS DE VENTAS #######################
 public function RegistrarCajas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["nrocaja"]) or empty($_POST["nomcaja"]) or empty($_POST["codigo"]))
 	{
 		echo "1";
@@ -12194,7 +12100,7 @@ public function RegistrarCajas()
 ######################### FUNCION LISTAR CAJAS DE VENTAS ################################
 public function ListarCajas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	
 	if($_SESSION['acceso'] == "administradorS") {
 
@@ -12204,7 +12110,6 @@ public function ListarCajas()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 	} else if($_SESSION["acceso"] == "cajero") {
 
@@ -12214,7 +12119,6 @@ public function ListarCajas()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 			} else {
 
@@ -12224,7 +12128,6 @@ public function ListarCajas()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 	}
 }
 ######################### FUNCION LISTAR CAJAS DE VENTAS ##########################
@@ -12232,7 +12135,7 @@ public function ListarCajas()
 ######################### FUNCION LISTAR CAJAS ABIERTAS ##########################
 public function ListarCajasAbiertas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION['acceso'] == "administradorG") {
 
 	$sql = "SELECT * FROM cajas INNER JOIN arqueocaja ON cajas.codcaja = arqueocaja.codcaja LEFT JOIN usuarios ON cajas.codigo = usuarios.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE usuarios.codsucursal = ? AND arqueocaja.statusarqueo = 1";
@@ -12251,7 +12154,6 @@ public function ListarCajasAbiertas()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 
 	} else if($_SESSION["acceso"] == "cajero") {
@@ -12262,7 +12164,6 @@ public function ListarCajasAbiertas()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 			} else {
 
@@ -12272,7 +12173,6 @@ public function ListarCajasAbiertas()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
    }
 }
 ######################### FUNCION LISTAR CAJAS ABIERTAS ##########################
@@ -12280,7 +12180,7 @@ public function ListarCajasAbiertas()
 ############################ FUNCION ID CAJAS DE VENTAS #################################
 public function CajasPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM cajas LEFT JOIN usuarios ON usuarios.codigo = cajas.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE cajas.codcaja = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codcaja"])));
@@ -12296,7 +12196,6 @@ public function CajasPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID CAJAS DE VENTAS #################################
@@ -12304,7 +12203,7 @@ public function CajasPorId()
 #################### FUNCION ACTUALIZAR CAJAS DE VENTAS ############################
 public function ActualizarCajas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codcaja"]) or empty($_POST["nrocaja"]) or empty($_POST["nomcaja"]) or empty($_POST["codigo"]))
 	{
 		echo "1";
@@ -12373,7 +12272,7 @@ public function ActualizarCajas()
 ####################### FUNCION ELIMINAR CAJAS DE VENTAS ########################
 public function EliminarCajas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 		if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS") {
 
 		$sql = "SELECT codcaja FROM ventas WHERE codcaja = ?";
@@ -12409,7 +12308,7 @@ public function EliminarCajas()
 ####################### FUNCION BUSCAR CAJAS POR SUCURSAL ###############################
 public function BuscarCajasxSucursal() 
 	       {
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = " SELECT * FROM cajas INNER JOIN usuarios ON cajas.codigo = usuarios.codigo INNER JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE sucursales.codsucursal = ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array(decrypt($_GET["codsucursal"])));
@@ -12426,7 +12325,6 @@ public function BuscarCajasxSucursal()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ######################## FUNCION BUSCAR CAJAS POR SUCURSAL #######################
@@ -12463,7 +12361,7 @@ public function BuscarCajasxSucursal()
 ########################## FUNCION PARA REGISTRAR ARQUEO DE CAJA ####################
 public function RegistrarArqueoCaja()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codcaja"]) or empty($_POST["montoinicial"]) or empty($_POST["fecharegistro"]))
 	{
 		echo "1";
@@ -12519,7 +12417,7 @@ public function RegistrarArqueoCaja()
 ######################## FUNCION PARA LISTAR ARQUEO DE CAJA ########################
 public function ListarArqueoCaja()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	
 	if($_SESSION['acceso'] == "administradorS") {
 
@@ -12529,7 +12427,6 @@ public function ListarArqueoCaja()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 	} else if($_SESSION["acceso"] == "cajero") {
 
@@ -12539,7 +12436,6 @@ public function ListarArqueoCaja()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 			} else {
 
@@ -12549,7 +12445,6 @@ public function ListarArqueoCaja()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 			}
 		}
@@ -12558,7 +12453,7 @@ public function ListarArqueoCaja()
 ########################## FUNCION ID ARQUEO DE CAJA #############################
 public function ArqueoCajaPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.codcaja LEFT JOIN usuarios ON cajas.codigo = usuarios.codigo 
 	LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal
 	LEFT JOIN documentos ON sucursales.documsucursal = documentos.coddocumento
@@ -12579,7 +12474,6 @@ public function ArqueoCajaPorId()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################## FUNCION ID ARQUEO DE CAJA #############################
@@ -12587,7 +12481,7 @@ public function ArqueoCajaPorId()
 ##################### FUNCION VERIFICA ARQUEO DE CAJA POR USUARIO #######################
 public function ArqueoCajaPorUsuario()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.codcaja INNER JOIN usuarios ON cajas.codigo = usuarios.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE usuarios.codigo = ? AND arqueocaja.statusarqueo = 1";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array($_SESSION["codigo"]));
@@ -12603,7 +12497,6 @@ public function ArqueoCajaPorUsuario()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION VERIFICA ARQUEO DE CAJA POR USUARIO ###################
@@ -12611,7 +12504,7 @@ public function ArqueoCajaPorUsuario()
 ######################### FUNCION PARA CERRAR ARQUEO DE CAJA #########################
 public function CerrarArqueoCaja()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codarqueo"]) or empty($_POST["dineroefectivo"]))
 	{
 		echo "1";
@@ -12661,7 +12554,7 @@ public function CerrarArqueoCaja()
 ###################### FUNCION BUSCAR ARQUEOS DE CAJA POR FECHAS ######################
 public function BuscarArqueosxFechas() 
 	       {
-		self::SetNames();		
+		$this->db->SetNames();
 $sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.codcaja LEFT JOIN usuarios ON cajas.codigo = usuarios.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE sucursales.codsucursal = ? AND arqueocaja.codcaja = ? AND DATE_FORMAT(arqueocaja.fechaapertura,'%Y-%m-%d') >= ? AND DATE_FORMAT(arqueocaja.fechaapertura,'%Y-%m-%d') <= ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->bindValue(1, trim(decrypt($_GET['codsucursal'])));
@@ -12684,7 +12577,6 @@ $sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 	    }
 	
 }
@@ -12722,7 +12614,7 @@ $sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.
 ###################### FUNCION PARA REGISTRAR MOVIMIENTO EN CAJA #######################
 public function RegistrarMovimientos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["tipomovimiento"]) or empty($_POST["montomovimiento"]) or empty($_POST["codmediopago"]) or empty($_POST["codcaja"]))
 	{
 		echo "1";
@@ -12841,7 +12733,7 @@ public function RegistrarMovimientos()
 ###################### FUNCION PARA LISTAR MOVIMIENTO EN CAJA #######################
 public function ListarMovimientos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	
 	if($_SESSION['acceso'] == "administradorS") {
 
@@ -12851,7 +12743,6 @@ public function ListarMovimientos()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 	} else if($_SESSION["acceso"] == "cajero") {
 
@@ -12861,7 +12752,6 @@ public function ListarMovimientos()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 			} else {
 
@@ -12871,7 +12761,6 @@ public function ListarMovimientos()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 
 			}
 		}
@@ -12880,7 +12769,7 @@ public function ListarMovimientos()
 ########################## FUNCION ID MOVIMIENTO EN CAJA #############################
 public function MovimientosPorId()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = " SELECT * from movimientoscajas LEFT JOIN cajas ON movimientoscajas.codcaja = cajas.codcaja LEFT JOIN mediospagos ON movimientoscajas.codmediopago = mediospagos.codmediopago LEFT JOIN usuarios ON cajas.codigo = usuarios.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE movimientoscajas.codmovimiento = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_GET["codmovimiento"])));
@@ -12896,7 +12785,6 @@ public function MovimientosPorId()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################## FUNCION ID MOVIMIENTO EN CAJA #############################
@@ -12904,7 +12792,7 @@ public function MovimientosPorId()
 ##################### FUNCION PARA ACTUALIZAR MOVIMIENTOS EN CAJA ##################
 public function ActualizarMovimientos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 if(empty($_POST["tipomovimiento"]) or empty($_POST["montomovimiento"]) or empty($_POST["codmediopago"]) or empty($_POST["codcaja"]))
 	{
 		echo "1";
@@ -13109,7 +12997,7 @@ if($tipomovimiento=="INGRESO"){
 ################## FUNCION BUSCAR MOVIMIENTOS DE CAJA POR FECHAS #######################
 public function BuscarMovimientosxFechas() 
 	       {
-		self::SetNames();		
+		$this->db->SetNames();
 $sql = "SELECT * FROM movimientoscajas INNER JOIN cajas ON movimientoscajas.codcaja = cajas.codcaja LEFT JOIN usuarios ON cajas.codigo = usuarios.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal LEFT JOIN mediospagos ON mediospagos.codmediopago = movimientoscajas.codmediopago WHERE sucursales.codsucursal = ? AND movimientoscajas.codcaja = ? AND DATE_FORMAT(movimientoscajas.fechamovimiento,'%Y-%m-%d') >= ? AND DATE_FORMAT(movimientoscajas.fechamovimiento,'%Y-%m-%d') <= ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->bindValue(1, trim(decrypt($_GET['codsucursal'])));
@@ -13132,7 +13020,6 @@ $sql = "SELECT * FROM movimientoscajas INNER JOIN cajas ON movimientoscajas.codc
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 	    }
 	
 }
@@ -13176,7 +13063,7 @@ $sql = "SELECT * FROM movimientoscajas INNER JOIN cajas ON movimientoscajas.codc
 ############################# FUNCION REGISTRAR VENTAS ###############################
 	public function RegistrarVentas()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 		$sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.codcaja INNER JOIN usuarios ON cajas.codigo = usuarios.codigo WHERE usuarios.codigo = ? AND arqueocaja.statusarqueo = 1";
 		$stmt = $this->dbh->prepare($sql);
@@ -13639,7 +13526,7 @@ echo "<script>window.open('reportepdf?codventa=".encrypt($codventa)."&codsucursa
 ########################## FUNCION LISTAR VENTAS ################################
 public function ListarVentas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 if ($_SESSION['acceso'] == "administradorG") {
 
@@ -13701,7 +13588,6 @@ if ($_SESSION['acceso'] == "administradorG") {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
  } else if($_SESSION["acceso"] == "cajero") {
 
@@ -13763,7 +13649,6 @@ if ($_SESSION['acceso'] == "administradorG") {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
 } else {
 
@@ -13825,7 +13710,6 @@ if ($_SESSION['acceso'] == "administradorG") {
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      }
 }
@@ -13834,7 +13718,7 @@ if ($_SESSION['acceso'] == "administradorG") {
 ############################ FUNCION ID VENTAS #################################
 public function VentasPorId()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT 
 		ventas.idventa, 
 		ventas.tipodocumento, 
@@ -13936,7 +13820,6 @@ public function VentasPorId()
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ############################ FUNCION ID VENTAS #################################
@@ -13944,7 +13827,7 @@ public function VentasPorId()
 ########################### FUNCION VER DETALLES VENTAS ##########################
 public function VerDetallesVentas()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT
 	detalleventas.coddetalleventa,
 	detalleventas.codventa,
@@ -13977,14 +13860,13 @@ public function VerDetallesVentas()
 		$this->p[]=$row;
 	}
 		return $this->p;
-		$this->dbh=null;
 }
 ############################ FUNCION VER DETALLES VENTAS #######################
 
 ############################# FUNCION ACTUALIZAR VENTAS ##########################
 public function ActualizarVentas()
 	{
-	self::SetNames();
+	$this->db->SetNames();
 	if(empty($_POST["codventa"]) or empty($_POST["codsucursal"]))
 	{
 		echo "1";
@@ -14368,7 +14250,7 @@ echo "<script>window.open('reportepdf?codventa=".encrypt($codventa)."&codsucursa
 ########################## FUNCION AGREGAR DETALLES VENTAS ############################
 public function AgregarDetallesVentas()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		if(empty($_POST["codventa"]) or empty($_POST["codsucursal"]))
 		{
 			echo "1";
@@ -14840,7 +14722,7 @@ echo "<script>window.open('reportepdf?codventa=".encrypt($codventa)."&codsucursa
 public function EliminarDetallesVentas()
 {
 	
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION["acceso"]=="administradorS") {
 
         ############ CONSULTO TOTAL ACTUAL ##############
@@ -15099,7 +14981,7 @@ public function EliminarDetallesVentas()
 public function EliminarVentas()
 	{
 	
-	self::SetNames();
+	$this->db->SetNames();
 	if ($_SESSION["acceso"]=="administradorS") {
 
         ############ CONSULTO TOTAL ACTUAL ##############
@@ -15287,7 +15169,7 @@ public function EliminarVentas()
 ######################### FUNCION LISTAR VENTAS DIARIAS ###########################
 public function BuscarVentasDiarias()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	if($_SESSION['acceso'] == "administradorS") {
 
 	$sql = "SELECT 
@@ -15351,7 +15233,6 @@ public function BuscarVentasDiarias()
 			$this->p[] = $row;
 		}
 		    return $this->p;
-			$this->dbh=null;
 
 	} else {
 
@@ -15414,7 +15295,6 @@ public function BuscarVentasDiarias()
 			$this->p[] = $row;
 		}
 		    return $this->p;
-			$this->dbh=null;
 	}
 }
 ###################### FUNCION LISTAR VENTAS DIARIAS ######################
@@ -15422,7 +15302,7 @@ public function BuscarVentasDiarias()
 ###################### FUNCION BUSQUEDA VENTAS POR CAJAS ###########################
 	public function BuscarVentasxCajas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql ="SELECT 
 		ventas.idventa, 
 		ventas.tipodocumento, 
@@ -15508,7 +15388,6 @@ public function BuscarVentasDiarias()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA VENTAS POR CAJAS ###########################
@@ -15516,7 +15395,7 @@ public function BuscarVentasDiarias()
 ###################### FUNCION BUSQUEDA VENTAS POR FECHAS ###########################
 	public function BuscarVentasxFechas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql ="SELECT 
 		ventas.idventa, 
 		ventas.tipodocumento, 
@@ -15598,7 +15477,6 @@ public function BuscarVentasDiarias()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA VENTAS POR FECHAS ###########################
@@ -15646,7 +15524,7 @@ public function BuscarVentasDiarias()
 ####################### FUNCION REGISTRAR PAGOS A CREDITOS ##########################
 	public function RegistrarPago()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 		$sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.codcaja INNER JOIN usuarios ON cajas.codigo = usuarios.codigo WHERE usuarios.codigo = ?";
 		$stmt = $this->dbh->prepare($sql);
@@ -15795,7 +15673,7 @@ echo "<script>window.open('reportepdf?codventa=".encrypt($codventa)."&codsucursa
 ###################### FUNCION LISTAR CREDITOS ####################### 
 public function ListarCreditos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT 
 	ventas.idventa,
 	ventas.tipodocumento,
@@ -15837,14 +15715,13 @@ public function ListarCreditos()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 }
 ###################### FUNCION LISTAR CREDITOS ####################### 
 
 ############################ FUNCION ID CREDITOS #################################
 	public function CreditosPorId()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = " SELECT 
 		ventas.idventa, 
 		ventas.tipodocumento, 
@@ -15927,7 +15804,6 @@ public function ListarCreditos()
 				$this->p[] = $row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ############################ FUNCION ID CREDITOS #################################
@@ -15935,7 +15811,7 @@ public function ListarCreditos()
 ########################### FUNCION VER DETALLES VENTAS #######################
 public function VerDetallesAbonos()
 {
-	self::SetNames();
+	$this->db->SetNames();
 	$sql = "SELECT * FROM abonoscreditosventas INNER JOIN ventas ON abonoscreditosventas.codventa = ventas.codventa LEFT JOIN cajas ON abonoscreditosventas.codcaja = cajas.codcaja WHERE abonoscreditosventas.codventa = ? AND abonoscreditosventas.codsucursal = ?";	
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->bindValue(1, trim(decrypt($_GET["codventa"])));
@@ -15953,7 +15829,6 @@ public function VerDetallesAbonos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ########################## FUNCION VER DETALLES VENTAS ###########################
@@ -15961,7 +15836,7 @@ public function VerDetallesAbonos()
 ###################### FUNCION BUSQUEDA CREDITOS POR CLIENTES ###########################
 	public function BuscarCreditosxClientes() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 	ventas.codventa,
 	ventas.tipodocumento, 
@@ -16017,7 +15892,6 @@ public function VerDetallesAbonos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA CREDITOS POR CLIENTES ###########################
@@ -16025,7 +15899,7 @@ public function VerDetallesAbonos()
 ###################### FUNCION BUSQUEDA CREDITOS POR FECHAS ###########################
 	public function BuscarCreditosxFechas() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 	ventas.codventa, 
 	ventas.tipodocumento,
@@ -16083,7 +15957,6 @@ public function VerDetallesAbonos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA CREDITOS POR FECHAS ###########################
@@ -16091,7 +15964,7 @@ public function VerDetallesAbonos()
 ###################### FUNCION BUSQUEDA CREDITOS POR DETALLES ###########################
 	public function BuscarCreditosxDetalles() 
 	{
-		self::SetNames();
+		$this->db->SetNames();
 		$sql = "SELECT 
 	ventas.codventa, 
 	ventas.tipodocumento,
@@ -16149,7 +16022,6 @@ public function VerDetallesAbonos()
 				$this->p[]=$row;
 			}
 			return $this->p;
-			$this->dbh=null;
 		}
 	}
 ###################### FUNCION BUSQUEDA CREDITOS POR DETALLES ###########################
@@ -16178,7 +16050,7 @@ public function VerDetallesAbonos()
 ########################## FUNCION GRAFICO POR SUCURSALES ##########################
 public function GraficoxSucursal()
 {
-	self::SetNames();
+	$this->db->SetNames();
     $sql = "SELECT 
     sucursales.codsucursal id,
 	sucursales.razonsocial,
@@ -16204,14 +16076,13 @@ public function GraficoxSucursal()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 }
 ########################## FUNCION GRAFICO POR SUCURSALES ###########################
 
 ########################### FUNCION SUMA DE COTIZACIONES ############################
 public function SumaCotizaciones()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	$sql ="SELECT  
 	MONTH(fechacotizacion) mes, 
@@ -16223,7 +16094,6 @@ public function SumaCotizaciones()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  
  } 
 ########################### FUNCION SUMA DE COTIZACIONES #############################
@@ -16231,7 +16101,7 @@ public function SumaCotizaciones()
 ########################### FUNCION SUMA DE COMPRAS #################################
  public function SumaCompras()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	$sql ="SELECT  
 	MONTH(fecharecepcion) mes, 
@@ -16243,7 +16113,6 @@ public function SumaCotizaciones()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  
  } 
 ########################### FUNCION SUMA DE COMPRAS #################################
@@ -16251,7 +16120,7 @@ public function SumaCotizaciones()
 ########################### FUNCION SUMA DE VENTAS #################################
  public function SumaVentas()
 {
-	self::SetNames();
+	$this->db->SetNames();
 
 	$sql ="SELECT  
 	MONTH(fechaventa) mes, 
@@ -16263,7 +16132,6 @@ public function SumaCotizaciones()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
  
  }
 ########################### FUNCION SUMA DE VENTAS #################################
@@ -16271,7 +16139,7 @@ public function SumaCotizaciones()
 ########################### FUNCION PRODUCTOS 5 MAS VENDIDOS ############################
 	public function ProductosMasVendidos()
 	{
-		self::SetNames();
+		$this->db->SetNames();
 
 	if ($_SESSION['acceso'] == "administradorG") {
 
@@ -16281,7 +16149,6 @@ public function SumaCotizaciones()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 
      } else {
 
@@ -16303,7 +16170,6 @@ public function SumaCotizaciones()
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
    }
 }
 ########################## FUNCION 5 PRODUCTOS MAS VENDIDOS ###########################
@@ -16311,14 +16177,13 @@ public function SumaCotizaciones()
 ########################## FUNCION SUMAR VENTAS POR USUARIOS ##########################
 	public function VentasxUsuarios()
 	{
-		self::SetNames();
+		$this->db->SetNames();
      $sql = "SELECT usuarios.codigo, usuarios.nombres, SUM(ventas.totalpago) as total FROM (usuarios INNER JOIN ventas ON usuarios.codigo=ventas.codigo) WHERE ventas.codsucursal = '".limpiar($_SESSION["codsucursal"])."' AND YEAR(ventas.fechaventa) = '".date('Y')."' GROUP BY usuarios.codigo";
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
 	}
 	return $this->p;
-	$this->dbh=null;
 }
 ########################## FUNCION SUMAR VENTAS POR USUARIOS #########################
 
@@ -16326,7 +16191,7 @@ public function SumaCotizaciones()
 ########################## FUNCION PARA CONTAR REGISTROS ###########################
 public function ContarRegistros()
 	{
-      self::SetNames();
+      $this->db->SetNames();
 if($_SESSION['acceso'] == "administradorG") {
 
 $sql = "SELECT
@@ -16352,7 +16217,6 @@ $sql = "SELECT
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 
      } else {
 
@@ -16382,7 +16246,6 @@ $sql = "SELECT
 			$this->p[] = $row;
 		}
 		return $this->p;
-		$this->dbh=null;
 	}
 }
 ######################## FUNCION PARA CONTAR REGISTROS #############################

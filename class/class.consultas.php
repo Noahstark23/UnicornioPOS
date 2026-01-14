@@ -2,11 +2,15 @@
 session_start();
 require_once("classconexion.php");
 
-class conectorDB extends Db
+class conectorDB
 {
+    private $db;
+    private $dbh;
+
 	public function __construct()
     {
-        parent::__construct();
+        $this->db = Db::getInstance();
+        $this->dbh = $this->db->getConnection();
     } 	
 	
 	public function EjecutarSentencia($consulta, $valores = array()){  //funcion principal, ejecuta todas las consultas
@@ -33,7 +37,6 @@ class conectorDB extends Db
 			}	
 		}
 		return $resultado;
-		$this->dbh = null; //cerramos la conexión
 	} /// Termina funcion consultarBD
 }/// Termina clase conectorDB
 
