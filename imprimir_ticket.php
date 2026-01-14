@@ -5,6 +5,14 @@ ob_start();
 require('fpdf/fpdf.php');
 require_once 'includes/db.php';
 
+// --- CONFIGURACIÓN AUTOMÁTICA DGI (NICARAGUA) ---
+// Al editar esto aquí, saldrá en TODOS los tickets futuros automáticamente.
+$empresa_ruc = "J0000000000"; // Tu RUC real
+$empresa_nombre = "UNICORNIO STORE";
+$empresa_dir = "Managua, Nicaragua";
+$dgi_autorizacion = "Resolución No. XXXXX-2026";
+// ------------------------------------------------
+
 $codVenta = $_GET['cod'] ?? '';
 if (!$codVenta) die("Error: Ticket no especificado.");
 
@@ -40,9 +48,11 @@ try {
 
     // Encabezado
     $pdf->SetFont('Courier','B',10);
-    $pdf->Cell(72,5,"POS UNICORNIO",0,1,'C');
+    $pdf->Cell(72,5,utf8_decode($empresa_nombre),0,1,'C');
     $pdf->SetFont('Courier','',8);
-    $pdf->Cell(72,4,"RUC: J0310000000000",0,1,'C');
+    $pdf->Cell(72,4,"RUC: " . $empresa_ruc,0,1,'C');
+    $pdf->Cell(72,4,utf8_decode($empresa_dir),0,1,'C');
+    $pdf->Cell(72,4,utf8_decode($dgi_autorizacion),0,1,'C');
     $pdf->Cell(72,4,"----------------------------------------",0,1,'C');
 
     // Info Venta

