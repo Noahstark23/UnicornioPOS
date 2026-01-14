@@ -569,7 +569,9 @@
                             total: this.total(),
                             productos: this.carrito,
                             tipopago: this.tipoPago,
-                            formapago: this.formaPago
+                            formapago: this.formaPago,
+                            pagorecibido: this.pagoCon,  // Dinero recibido del cliente
+                            cambio: this.cambioFinal      // Cambio a devolver
                         })
                     })
                     .then(r => r.json())
