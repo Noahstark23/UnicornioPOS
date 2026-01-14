@@ -108,7 +108,7 @@ try {
     $pdf->SetFont('Courier','',8);
     $pdf->Cell(72, 4, utf8_decode("Vuelva pronto"), 0, 1, 'C');
     $pdf->Ln(1);
-    $pdf->Cell(72, 3, "www.unicorniopos.com", 0, 1, 'C');
+    $pdf->Cell(72, 3, "www.gruponortex.com", 0, 1, 'C');
     
     // Limpiamos buffer y salimos
     ob_end_clean();

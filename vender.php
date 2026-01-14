@@ -105,14 +105,23 @@
                 </div>
             </div>
 
-            <div class="p-6 bg-gray-50 border-t">
-                <div class="flex justify-between text-xl font-bold mb-6 text-gray-800">
+            <div class="p-6 bg-gray-50 border-t sticky bottom-0 shadow-2xl">
+                <div class="flex justify-between text-xl font-bold mb-4 text-gray-800">
                     <span>Total</span>
                     <span x-text="'C$ ' + total()"></span>
                 </div>
+                <!-- Botón Cobrar Mejorado - Más Visible y Responsive -->
                 <button @click="abrirModalPago()" 
-                        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
-                    <span>Cobrar</span>
+                        class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+                               text-white font-black text-2xl py-6 px-8 rounded-2xl shadow-2xl 
+                               transform hover:scale-105 active:scale-95 transition-all duration-200 
+                               flex items-center justify-center gap-4 border-2 border-green-400
+                               focus:outline-none focus:ring-4 focus:ring-green-300">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>💰 COBRAR</span>
                 </button>
             </div>
         </div>
