@@ -367,7 +367,7 @@ case 'administradorG':  ?>
                 <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-folder-multiple"></i><span class="hide-menu">Mantenimiento</span></a>
                     <ul aria-expanded="false" class="collapse first-level">
 
-                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clientes" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clients_saas.php" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Proveedores</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -620,7 +620,7 @@ case 'administradorS': ?>
                 <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-folder-multiple"></i><span class="hide-menu">Mantenimiento</span></a>
                     <ul aria-expanded="false" class="collapse first-level">
 
-                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clientes" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clients_saas.php" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Proveedores</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -860,7 +860,7 @@ case 'secretaria': ?>
                 <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-folder-multiple"></i><span class="hide-menu">Mantenimiento</span></a>
                     <ul aria-expanded="false" class="collapse first-level">
 
-                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clientes" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clients_saas.php" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Proveedores</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
