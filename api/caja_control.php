@@ -222,37 +222,12 @@ try {
     $stmt->execute([$caja['codarqueo']]);
     $egresosManuales = floatval($stmt->fetchColumn()) ?: 0;
 
-    // 4. ABONOS DE CRÉDITOS (Pagos recibidos en esta caja)
-    // Se filtra por codcaja, NO por codarqueo directo porque la tabla abonos guarda codcaja
-    // Pero debemos asegurar que sean de HOY o dentro del rango del arqueo si fuera por fechas.
-    // Lo más seguro dado el esquema legacy: filtrar por codcaja y fecha >= fechaapertura
-    // OJO: abonoscreditosventas tiene 'codcaja'.
-    $sqlAbonos = "SELECT IFNULL(SUM(montoabono), 0) 
-                  FROM abonoscreditosventas 
-                  WHERE codcaja = ? 
-                  AND fechaabono >= ?";
-    $stmt = $db->prepare($sqlAbonos);
-    $stmt->execute([$caja['codarqueo'], $caja['fechaapertura']]); 
-    // NOTA: Usamos codarqueo como codcaja? NO. 
-    // Arqueocaja tiene 'codcaja' (ID fisico de caja) y 'codarqueo' (ID de sesion).
-    // Abonos guarda 'codcaja' (fisico). 
-    // REVISIÓN: En clients_v2.php insertamos $codCaja obtenido de arqueocaja['codcaja'].
-    // Por tanto en abonoscreditosventas.codcaja está el ID FISICO (ej. 1).
-    // Si hay multiples arqueos el mismo dia, filtrar por fecha >= fechaapertura es seguro.
-    
-    // CORRECCION QUERY: Usar el codcaja real de la tabla arqueocaja
-    $idCajaFisica = $db->query("SELECT codcaja FROM arqueocaja WHERE codarqueo = " . $caja['codarqueo'])->fetchColumn();
-    
-    $stmt = $db->prepare($sqlAbonos);
-    $stmt->execute([$idCajaFisica, $fechaInicio]);
-    $abonos = floatval($stmt->fetchColumn()) ?: 0;
-
-
     $inicial = floatval($caja['montoinicial']);
     $totalVentas = $ventasEfectivo + $ventasCredito + $ventasTarjeta;
     
     // ⭐ FÓRMULA MAESTRA: Total esperado incluye TODOS los movimientos de efectivo
-    $totalEsperado = $inicial + $ventasEfectivo + $ingresosManuales + $abonos - $egresosManuales;
+    // NOTA: abonos removidos temporalmente hasta agregar column formapago a tabla abonoscreditosventas
+    $totalEsperado = $inicial + $ventasEfectivo + $ingresosManuales - $egresosManuales;
 
     // 5. Respuesta JSON con DESGLOSE COMPLETO
     echo json_encode([
@@ -269,7 +244,7 @@ try {
             'total_ventas' => $totalVentas,
             'ingresos' => $ingresosManuales,
             'egresos' => $egresosManuales,
-            'abonos' => $abonos,
+            'abonos' => 0, // TODO: Agregar column formapago a abonoscreditosventas
             'esperado' => $totalEsperado
         ]
     ]);

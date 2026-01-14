@@ -1,4 +1,3 @@
-<?php
 // api/productos.php
 require_once 'common.php';
 

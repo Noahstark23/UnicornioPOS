@@ -1193,8 +1193,7 @@ for($i=0;$i<sizeof($reg);$i++){
 $precioTotal+=$reg[$i]['precioventa'];
 $existeTotal+=$reg[$i]['existencia'];
 $vendidosTotal+=$reg[$i]['cantidad']; 
-$desc_monto = ($reg[$i]['precioventa'] * $reg[$i]['cantidad']) * ($reg[$i]['descproducto'] / 100);
-$pagoTotal += ($reg[$i]['precioventa'] * $reg[$i]['cantidad']) - $desc_monto; 
+$pagoTotal+=$reg[$i]['precioventa']*$reg[$i]['cantidad']-$reg[$i]['descproducto']/100; 
 ?>
                                 <tr class="text-center">
                       <td><?php echo $a++; ?></div></td>
@@ -1206,24 +1205,21 @@ $pagoTotal += ($reg[$i]['precioventa'] * $reg[$i]['cantidad']) - $desc_monto;
                       <td><?php echo $simbolo.number_format($reg[$i]["precioventa"], 2, '.', ','); ?></td>
                       <td><?php echo $reg[$i]['existencia']; ?></td>
                       <td><?php echo $reg[$i]['cantidad']; ?></td>
-                      <td><?php 
-                        $total_row = ($reg[$i]['precioventa'] * $reg[$i]['cantidad']);
-                        $desc_row = $total_row * ($reg[$i]['descproducto'] / 100);
-                        echo $simbolo.number_format($total_row - $desc_row, 2, '.', ','); 
-                      ?></td>
+                      <td><?php echo $simbolo.number_format($reg[$i]['precioventa']*$reg[$i]['cantidad']-$reg[$i]['descproducto']/100, 2, '.', ','); ?></td>
                                 </tr>
                         <?php  }  ?>
                       <tr align="center">
-                              </tbody>
-                              <tfoot>
-                                <tr align="center" class="text-dark bg-light">
-                                    <th colspan="6"></th>
-                                    <th><strong>TOTALES</strong></th>
-                                    <th><strong><?php echo $existeTotal; ?></strong></th>
-                                    <th><strong><?php echo $vendidosTotal; ?></strong></th>
-                                    <th><strong><?php echo $simbolo.number_format($pagoTotal, 2, '.', ','); ?></strong></th>
-                                </tr>
-                              </tfoot>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><strong><?php echo $simbolo.number_format($precioTotal, 2, '.', ','); ?></strong></td>
+                        <td><strong><?php echo $existeTotal; ?></strong></td>
+                        <td><strong><?php echo $vendidosTotal; ?></strong></td>
+                        <td><strong><?php echo $simbolo.number_format($pagoTotal, 2, '.', ','); ?></strong></td>
+                      </tr>
                               </tbody>
                           </table>
                       </div>
