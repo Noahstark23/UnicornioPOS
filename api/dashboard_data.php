@@ -19,47 +19,14 @@ try {
     $res = $stmt->fetch(PDO::FETCH_ASSOC);
     $totalVentas = $res['total'] ?? 0;
 
-    // 2. CAJA (Obtener de la API consolidada)
-    // Usamos la misma lógica que caja_control.php para consistencia
-    $enCaja = 0;
-    
-    // Buscar caja abierta
-    $sqlCaja = "SELECT codarqueo, montoinicial, fechaapertura 
-                FROM arqueocaja 
-                WHERE statusarqueo = 1 
-                ORDER BY codarqueo DESC LIMIT 1";
+    // 2. CAJA (Inicial + Ventas - Egresos)
+    $sqlCaja = "SELECT montoinicial, ingresos, egresos FROM arqueocaja 
+                WHERE codcaja = 1 AND statusarqueo = 1 ORDER BY codarqueo DESC LIMIT 1";
     $caja = $db->query($sqlCaja)->fetch(PDO::FETCH_ASSOC);
     
+    $enCaja = 0;
     if($caja) {
-        $fechaInicio = $caja['fechaapertura'];
-        $inicial = floatval($caja['montoinicial']);
-        
-        // Ventas en EFECTIVO del turno
-        $sqlEfectivo = "SELECT SUM(totalpago) 
-                        FROM ventas 
-                        WHERE fechaventa >= ? 
-                        AND statusventa = 'EMITIDA' 
-                        AND tipopago = 'CONTADO'
-                        AND formapago = 'EFECTIVO'";
-        $stmt = $db->prepare($sqlEfectivo);
-        $stmt->execute([$fechaInicio]);
-        $ventasEfectivo = floatval($stmt->fetchColumn()) ?: 0.00;
-        
-        // Movimientos MANUALES
-        $sqlIngresos = "SELECT IFNULL(SUM(monto), 0) FROM movimientos_caja 
-                        WHERE codarqueo = ? AND tipomovimiento = 'INGRESO'";
-        $stmt = $db->prepare($sqlIngresos);
-        $stmt->execute([$caja['codarqueo']]);
-        $ingresosManuales = floatval($stmt->fetchColumn()) ?: 0;
-        
-        $sqlEgresos = "SELECT IFNULL(SUM(monto), 0) FROM movimientos_caja 
-                       WHERE codarqueo = ? AND tipomovimiento = 'EGRESO'";
-        $stmt = $db->prepare($sqlEgresos);
-        $stmt->execute([$caja['codarqueo']]);
-        $egresosManuales = floatval($stmt->fetchColumn()) ?: 0;
-        
-        // FÓRMULA MAESTRA: Efectivo esperado en caja
-        $enCaja = $inicial + $ventasEfectivo + $ingresosManuales - $egresosManuales;
+        $enCaja = $caja['montoinicial'] + $totalVentas + ($caja['ingresos']??0) - ($caja['egresos']??0);
     }
 
     // 3. GRÁFICO

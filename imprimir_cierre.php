@@ -90,11 +90,36 @@ try {
     $stmt->execute([$codarqueo]);
     $egresos = floatval($stmt->fetchColumn()) ?: 0;
     
-    // Abonos de créditos - REMOVIDO temporalmente (columnas mediopago/formapago no existen)
-    $abonos = 0;
+    // Abonos de créditos (Recuperado)
+    $codCajaFisica = $cierre['codcaja'];
     
-    // FÓRMULA MAESTRA
-    $esperado = $inicial + $ventasEfectivo + $ingresos - $egresos;
+    // 1. Total Abonos
+    $sqlAbonos = "SELECT IFNULL(SUM(montoabono), 0) FROM abonoscreditosventas 
+                  WHERE codcaja = ? AND fechaabono >= ? AND fechaabono <= ?";
+    $stmt = $db->prepare($sqlAbonos);
+    $stmt->execute([$codCajaFisica, $fechaInicio, $fechaCierre ?: date('Y-m-d H:i:s')]); // Si fechaCierre es null (abierta), usar NOW
+    $abonos = floatval($stmt->fetchColumn()) ?: 0;
+
+    // 2. Detalle de Abonos (para reporte detallado)
+    // CORRECCION: codfactura no existe, usamos codventa como referencia
+    // Agregamos statusventa y totalpago para determinar si fue cancelación o abono
+    $sqlDetalleAbonos = "SELECT a.fechaabono, c.nomcliente, a.montoabono, v.codventa, v.statusventa, v.totalpago 
+                         FROM abonoscreditosventas a 
+                         INNER JOIN clientes c ON a.codcliente = c.codcliente 
+                         INNER JOIN ventas v ON a.codventa = v.codventa 
+                         WHERE a.codcaja = ? AND a.fechaabono >= ? AND a.fechaabono <= ?
+                         ORDER BY a.fechaabono DESC";
+    $stmt = $db->prepare($sqlDetalleAbonos);
+    $stmt->execute([$codCajaFisica, $fechaInicio, $fechaCierre ?: date('Y-m-d H:i:s')]);
+    $listaAbonos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // FÓRMULA MAESTRA RECALCULADA
+    // Recalculamos todo para corregir inconsistencias históricas en la BD (donde no se sumaban abonos)
+    $esperado = $inicial + $ventasEfectivo + $ingresos + $abonos - $egresos;
+    
+    // CORRECCIÓN VISUAL: Recalcular diferencia basada en el esperado CORREGIDO
+    // Esto evita que el reporte diga "Esperado: 588, Contado: 588, Diferencia: 88" (error legacy)
+    $diferencia = $efectivoContado - $esperado;
     
     // Obtener historial del cierre (si existe)
     $historial = null;
@@ -187,6 +212,46 @@ function formatMoney($amount) {
             </tr>
         </table>
     </div>
+
+    <!-- DETALLE DE ABONOS (Nuevo) -->
+    <?php if (count($listaAbonos) > 0): ?>
+    <div class="border border-indigo-300 bg-indigo-50 rounded-lg p-4 mb-6">
+        <h3 class="text-sm font-bold text-indigo-800 mb-3">🧾 DETALLE DE ABONOS RECIBIDOS (CRÉDITOS QUE PAGARON)</h3>
+        <table class="w-full text-xs text-left">
+            <thead>
+                <tr class="border-b border-indigo-200 text-indigo-600">
+                    <th class="pb-2">Hora</th>
+                    <th class="pb-2">Cliente</th>
+                    <th class="pb-2">Ref. / Estado</th>
+                    <th class="pb-2 text-right">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($listaAbonos as $abono): ?>
+                <?php 
+                    // Determinar etiqueta
+                    $esCancelacion = ($abono['statusventa'] === 'PAGADA');
+                    $etiqueta = $esCancelacion ? "CANCELACIÓN (FINAL)" : "ABONO PARCIAL";
+                    $estilo = $esCancelacion ? "text-green-600 font-bold" : "text-orange-500";
+                ?>
+                <tr class="border-b border-indigo-100">
+                    <td class="py-1 text-gray-600"><?php echo date('H:i', strtotime($abono['fechaabono'])); ?></td>
+                    <td class="py-1 font-bold text-gray-800"><?php echo htmlspecialchars($abono['nomcliente']); ?></td>
+                    <td class="py-1 text-xs">
+                        Ref: #<?php echo $abono['codventa']; ?> <br>
+                        <span class="<?php echo $estilo; ?>"><?php echo $etiqueta; ?></span>
+                    </td>
+                    <td class="py-1 text-right font-bold text-indigo-700"><?php echo formatMoney($abono['montoabono']); ?></td>
+                </tr>
+                <?php endforeach; ?>
+                <tr class="border-t border-indigo-300">
+                    <td colspan="3" class="pt-2 text-right font-bold text-indigo-900">TOTAL RECUPERADO:</td>
+                    <td class="pt-2 text-right font-bold text-indigo-900 text-sm"><?php echo formatMoney($abonos); ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
 
     <!-- RESULTADO DEL CONTEO -->
     <div class="border-2 <?php echo $diferencia >= 0 ? 'border-green-600 bg-green-50' : 'border-red-600 bg-red-50'; ?> rounded-lg p-5 mb-6">

@@ -1,6 +1,5 @@
 <?php
 // api/productos.php
-define('API_PUBLIC', true); // Permitir acceso sin autenticación para el POS
 require_once 'common.php';
 
 // La conexión DB ya está disponible como DB::connect() gracias a common.php -> db.php

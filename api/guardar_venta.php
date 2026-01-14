@@ -97,7 +97,6 @@ try {
         'formapago' => $input['formapago'] ?? 'EFECTIVO', 'tipopago' => $input['tipopago'] ?? 'CONTADO',
         'subtotalivasi' => $subtotal, 'iva' => $iva, 'totaliva' => $iva,
         'montopagado' => $total, 'tenant_id' => 1,
-        'pagorecibido' => $input['pagorecibido'] ?? $total, 'cambio' => $input['cambio'] ?? 0,  // Nuevos campos
         'tipodocumento' => 'TICKET', 'codserie' => $codSerie, 'codautorizacion' => '0'
     ];
     

@@ -46,7 +46,7 @@
     <div x-show="estado === 'ABIERTA'" x-cloak class="w-full max-w-4xl">
         
         <!-- Grid de KPIs - Desglose por Forma de Pago -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
             
             <!-- Fondo Inicial -->
             <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm text-center">
@@ -76,6 +76,16 @@
                 <p class="text-2xl font-extrabold text-purple-800" x-text="formatMoney(calculos.ventas_tarjeta || 0)"></p>
                 <p class="text-xs text-purple-400 mt-1">En banco</p>
             </div>
+
+            <!-- Abonos Recibidos (NEW) -->
+            <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl shadow-sm text-center relative">
+                <div class="absolute top-1 right-1 bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                     RECUPERADO
+                </div>
+                <p class="text-indigo-500 font-bold uppercase text-xs tracking-wider mb-1">Abonos Recibidos</p>
+                <p class="text-2xl font-extrabold text-indigo-800" x-text="formatMoney(calculos.abonos || 0)"></p>
+                <p class="text-xs text-indigo-400 mt-1">Pagos de créditos</p>
+            </div>
         </div>
 
         <!-- Total Esperado en Caja FÍSICA (tarjeta destacada) -->
@@ -85,6 +95,9 @@
             <p class="text-xs mt-2 opacity-75">
                 Fondo (<span x-text="formatMoney(calculos.inicial || 0)"></span>) 
                 + Efectivo (<span x-text="formatMoney(calculos.ventas_efectivo || 0)"></span>)
+                + Abonos (<span x-text="formatMoney(calculos.abonos || 0)"></span>)
+                + Ingresos (<span x-text="formatMoney(calculos.ingresos || 0)"></span>)
+                - Egresos (<span x-text="formatMoney(calculos.egresos || 0)"></span>)
             </p>
         </div>
 

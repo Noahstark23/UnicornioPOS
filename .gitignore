@@ -33,12 +33,3 @@ logs/
 *.sql
 *.zip
 *.rar
-
-# Instalador / Deployment
-*.exe
-*.iss
-Output/
-dist/
-build/
-installer/
-README_INSTALL.txt
