@@ -309,7 +309,16 @@
             </div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-2">¡Venta Registrada!</h2>
-            <p class="text-gray-500 mb-8">Ticket: <span class="font-mono font-bold text-gray-800" x-text="ultimoCodigo"></span></p>
+            <p class="text-gray-500 mb-2">Ticket: <span class="font-mono font-bold text-gray-800" x-text="ultimoCodigo"></span></p>
+            
+            <!-- CAMBIO DESTACADO PARA EL CAJERO -->
+            <div x-show="cambioFinal > 0" class="mb-6 p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-2xl">
+                <div class="text-xs font-bold uppercase tracking-wider text-green-700 mb-1">💰 Cambio a Devolver</div>
+                <div class="font-black text-6xl text-green-600" x-text="'C$ ' + cambioFinal.toFixed(2)"></div>
+            </div>
+            <div x-show="cambioFinal === 0" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="text-sm font-bold text-blue-700">✓ Pago Exacto - Sin Cambio</div>
+            </div>
 
             <div class="space-y-3">
                 <button @click="imprimirTicket()" 
@@ -342,6 +351,7 @@
                 modalPago: false,
                 ventaExitosa: false, // Nuevo estado
                 ultimoCodigo: '',    // Nuevo estado
+                cambioFinal: 0,      // Para mostrar en modal de éxito
                 clienteSeleccionado: null,
                 busquedaCliente: '',
                 clientesEncontrados: [],
@@ -547,6 +557,9 @@
                 confirmarVenta() {
                     // Si hay cliente seleccionado usamos su ID, si no, usamos '0' (Genérico)
                     const idClienteFinal = this.clienteSeleccionado ? this.clienteSeleccionado.id : '0'; 
+                    
+                    // GUARDAR CAMBIO ANTES DE LIMPIAR
+                    this.cambioFinal = parseFloat(this.cambio());
                     
                     fetch('api/guardar_venta.php', {
                         method: 'POST',
