@@ -5,7 +5,12 @@ if(isset($_SESSION['acceso'])) {
 
 $tra = new Login();
 
-$bd="softventas"; //parametro obligatorio 
+// Load configuration
+if (file_exists('includes/config.php')) {
+    require_once('includes/config.php');
+}
+
+$bd = defined('DB_NAME') ? DB_NAME : "softventas"; //parametro obligatorio
 // Tipo de compresion. 
 // Puede ser "zip", "gz", "bz2", o false (sin comprimir)
 $compresion = "false";
@@ -34,7 +39,13 @@ $tablaSQL = "SHOW FULL TABLES FROM $bd WHERE Table_Type='BASE TABLE';"; //SELECT
 // CONEXION 
 ///$conexion = new mysqli($host, $usuario, $passwd, $bd);
 
-$conexion = new mysqli('localhost','root','','softventas',3306) or die ("No se puede conectar con el servidor MySQL: %s\n". $conexion->connect_error);
+$host = defined('DB_HOST') ? DB_HOST : 'localhost';
+$user = defined('DB_USER') ? DB_USER : 'root';
+$pass = defined('DB_PASS') ? DB_PASS : '';
+$name = defined('DB_NAME') ? DB_NAME : 'softventas';
+$port = defined('DB_PORT') ? DB_PORT : 3306;
+
+$conexion = new mysqli($host, $user, $pass, $name, $port) or die ("No se puede conectar con el servidor MySQL: %s\n". $conexion->connect_error);
 if ($conexion->connect_errno) {
     printf("No se puede conectar con el servidor MySQL: %s\n", $conexion->connect_error);
     exit();
