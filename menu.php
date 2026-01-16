@@ -518,6 +518,8 @@ case 'administradorG':  ?>
                     </ul>
                 </li>
 
+                <li class="sidebar-item"><a href="cobranza_express.php" class="sidebar-link"><i class="mdi mdi-cellphone-iphone"></i><span class="hide-menu"> 📱 Modo Cobrador</span></a></li>
+
             <li class="sidebar-item waves-effect"><a href="logout" class="sidebar-link"><i class="mdi mdi-power"></i><span class="hide-menu"> Cerrar Sesión</span></a></li>
 
         </ul>
@@ -778,6 +780,8 @@ case 'administradorS': ?>
                     </ul>
                 </li>
 
+                <li class="sidebar-item"><a href="cobranza_express.php" class="sidebar-link"><i class="mdi mdi-cellphone-iphone"></i><span class="hide-menu"> 📱 Modo Cobrador</span></a></li>
+
         <li class="sidebar-item waves-effect"><a href="logout" class="sidebar-link"><i class="mdi mdi-power"></i><span class="hide-menu"> Cerrar Sesión</span></a></li>
 
         </ul>
@@ -1008,6 +1012,8 @@ case 'secretaria': ?>
                     </ul>
                 </li>
 
+                <li class="sidebar-item"><a href="cobranza_express.php" class="sidebar-link"><i class="mdi mdi-cellphone-iphone"></i><span class="hide-menu"> 📱 Modo Cobrador</span></a></li>
+
         <li class="sidebar-item waves-effect"><a href="logout" class="sidebar-link"><i class="mdi mdi-power"></i><span class="hide-menu"> Cerrar Sesión</span></a></li>
 
         </ul>
@@ -1117,6 +1123,8 @@ case 'cajero': ?>
 
                     </ul>
                 </li>
+
+                <li class="sidebar-item"><a href="cobranza_express.php" class="sidebar-link"><i class="mdi mdi-cellphone-iphone"></i><span class="hide-menu"> 📱 Modo Cobrador</span></a></li>
 
         <li class="sidebar-item waves-effect"><a href="logout" class="sidebar-link"><i class="mdi mdi-power"></i><span class="hide-menu"> Cerrar Sesión</span></a></li>
 
