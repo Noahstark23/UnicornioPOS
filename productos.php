@@ -1,395 +1,257 @@
 <?php
-require_once("class/class.php"); 
-if(isset($_SESSION['acceso'])) { 
-    if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS" || $_SESSION["acceso"]=="secretaria" || $_SESSION["acceso"]=="cajero") {
-
-$tra = new Login();
-$ses = $tra->ExpiraSession();  
-
-if(isset($_POST["proceso"]) and $_POST["proceso"]=="cargar")
-{
-$reg = $tra->CargarProductos();
-exit;
-} 
+session_start();
+if(!isset($_SESSION['acceso'])) {
+    header("Location: index.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html lang="es">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Ing. Ruben Chirinos">
-    <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos | Unicornio</title>
 
-    <!-- Menu CSS -->
+    <!-- LEGACY CSS -->
     <link href="assets/plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
-    <!-- toast CSS -->
-    <link href="assets/plugins/bower_components/toast-master/css/jquery.toast.css" rel="stylesheet">
-    <!-- Datatables CSS -->
-    <link href="assets/plugins/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <!-- Sweet-Alert -->
-    <link rel="stylesheet" href="assets/css/sweetalert.css">
-    <!-- animation CSS -->
-    <link href="assets/css/animate.css" rel="stylesheet">
-    <!-- needed css -->
     <link href="assets/css/style.css" rel="stylesheet">
-    <!-- color CSS -->
     <link href="assets/css/default.css" id="theme" rel="stylesheet">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
-
+    <!-- MODERN STACK -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+        .page-wrapper {
+            background: #f9fafb !important;
+            padding-bottom: 0px !important;
+        }
+        /* Custom scrollbar for table */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 
-<body onLoad="muestraReloj()" class="fix-header">
-    
-   <!-- ============================================================== -->
-    <!-- Preloader - style you can find in spinners.css -->
-    <!-- ============================================================== -->
-    <div class="preloader">
-        <svg class="circular" viewBox="25 25 50 50">
-        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
-        </svg>
-    </div>
+<body class="fix-header bg-gray-50" x-data="productsGrid()">
 
-    <!-- ============================================================== -->
-    <!-- Main wrapper - style you can find in pages.scss -->
-    <!-- ============================================================== -->
-    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-boxed-layout="full" data-boxed-layout="boxed" data-header-position="fixed" data-sidebar-position="fixed" class="mini-sidebar"> 
-
-<!-- sample modal content -->
-<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger">
-                <h4 class="modal-title text-white" id="myModalLabel"><i class="fa fa-align-justify"></i> Detalle de Producto</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><img src="assets/images/close.png"/></button>
-            </div>
-            <div class="modal-body">
-
-                <div id="muestraproductomodal"></div> 
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-dismiss="modal"><span class="fa fa-times-circle"></span> Cerrar</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-
-
-<!-- sample modal content -->
-<div id="myModall" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger">
-                <h4 class="modal-title text-white" id="myModalLabel"><i class="fa fa-align-justify"></i> Carga Masiva</h4>
-                <button type="button" onClick="ModalProducto()" class="close" data-dismiss="modal" aria-hidden="true"><img src="assets/images/close.png"/></button>
-            </div>
-            
-            <form class="form form-material" name="cargaproductos" id="cargaproductos" action="#" enctype="multipart/form-data">
-                
-             <div class="modal-body">
-                
-             <div id="carga">
-                 <!-- error will be shown here ! -->
-             </div>
-
-             <div class="row">
-                <div class="col-md-12"> 
-                    <div class="form-group has-feedback">
-                        <div class="fileinput fileinput-new" data-provides="fileinput">
-                            <div class="form-group has-feedback"> 
-                    <label class="control-label">Realice la búsqueda del Archivo (CSV): <span class="symbol required"></span></label>
-                    <div class="input-group">
-                    <div class="form-control" data-trigger="fileinput"><i class="fa fa-file-archive-o fileinput-exists"></i>
-                        <span class="fileinput-filename"></span>
-                    </div>
-                    <span class="input-group-addon btn btn-success btn-file">
-                    <span class="fileinput-new"><i class="fa fa-cloud-upload"></i> Selecciona Archivo</span>
-                    <span class="fileinput-exists"><i class="fa fa-file-archive-o"></i> Cambiar</span>
-                    <input type="hidden" name="proceso" id="proceso" value="cargar"/>
-                    <input type="file" class="btn btn-default" data-original-title="Suba su Archivo CSV" data-rel="tooltip" placeholder="Suba su Imagen" name="sel_file" id="sel_file" autocomplete="off" required="" aria-required="true">
-                    </span>
-                    <a href="#" class="input-group-addon btn btn-dark fileinput-exists" data-dismiss="fileinput"><i class="fa fa-trash-o"></i> Quitar</a>
-                            </div><small><p>Para realizar la Carga masiva de Productos el archivo debe de ser extensión (CSV Delimitado por Comas). Debe de llevar la cantidad de filas y columnas explicadas para la Carga exitosa de los registros.<br></small>
-                        </div>
-                        </div>
-                    </div> 
-                </div>
-            </div>
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-boxed-layout="full" data-header-position="fixed" data-sidebar-position="fixed" class="mini-sidebar">
         
-        <div id="divproducto"></div>
-
-        </div>
-
-        <div class="modal-footer">
-            <button type="button" onClick="CargaDivProductos()" class="btn btn-info"><span class="fa fa-eye"></span> Ver Detalles</button>
-            <button type="submit" name="btn-producto" id="btn-producto" class="btn btn-danger"><span class="fa fa-cloud-upload"></span> Cargar</button>
-            <button type="button" onClick="ModalProducto()" class="btn btn-dark" data-dismiss="modal"><span class="fa fa-times-circle"></span> Cerrar</button>
-        </div>
-    </form>
-
-</div>
-<!-- /.modal-content -->
-</div>
-<!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-                    
-                    
-    
-        <!-- INICIO DE MENU -->
         <?php include('menu.php'); ?>
-        <!-- FIN DE MENU -->
-   
 
-        <!-- ============================================================== -->
-        <!-- Page wrapper  -->
-        <!-- ============================================================== -->
         <div class="page-wrapper">
-            <!-- ============================================================== -->
-            <!-- Bread crumb and right sidebar toggle -->
-            <!-- ============================================================== -->
-            <div class="page-breadcrumb border-bottom">
-                <div class="row">
-                    <div class="col-lg-3 col-md-4 col-xs-12 align-self-center">
-                <h5 class="font-medium text-uppercase mb-0"><i class="fa fa-tasks"></i> Productos</h5>
+
+            <!-- HERO HEADER -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 pb-24 pt-12 px-6 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+
+                <div class="max-w-7xl mx-auto flex justify-between items-center relative z-10">
+                    <div>
+                        <h1 class="text-3xl font-black text-white leading-tight">Inventario de Productos</h1>
+                        <p class="text-indigo-100 mt-1 opacity-90">Gestiona precios y stock en tiempo real.</p>
                     </div>
-                    <div class="col-lg-9 col-md-8 col-xs-12 align-self-center">
-                        <nav aria-label="breadcrumb" class="mt-2 float-md-right float-left">
-                            <ol class="breadcrumb mb-0 justify-content-end p-0">
-                                <li class="breadcrumb-item">Mantenimiento</li>
-                                <li class="breadcrumb-item active" aria-current="page">Productos</li>
-                            </ol>
-                        </nav>
-                    </div>
+
+                    <a href="producto_express.php" class="bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        NUEVO PRODUCTO
+                    </a>
                 </div>
             </div>
-            <!-- ============================================================== -->
-            <!-- End Bread crumb and right sidebar toggle -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- Container fluid  -->
-            <!-- ============================================================== -->
-            <div class="page-content container-fluid">
-                <!-- ============================================================== -->
-                <!-- Start Page Content -->
-                <!-- ============================================================== -->
 
-<?php if ($_SESSION['acceso'] == "administradorG"){ ?>
+            <!-- MAIN CONTENT -->
+            <main class="max-w-7xl mx-auto px-6 -mt-16 relative z-20 pb-12">
 
+                <!-- DATA GRID -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
 
-<!-- Row -->
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header bg-danger">
-                <h4 class="card-title text-white"><i class="fa fa-tasks"></i> Productos</h4>
-            </div>
-
-            <div class="form-body">
-
-            <div class="card-body">
-
-            <form class="form form-material" method="post" action="#" name="productosxsucursal" id="productosxsucursal">
-
-                <div class="row">
-
-                    <div class="col-md-12"> 
-                        <div class="form-group has-feedback"> 
-                            <label class="control-label">Seleccione Sucursal: <span class="symbol required"></span></label>
-                            <i class="fa fa-bars form-control-feedback"></i>
-                            <select name="codsucursal" id="codsucursal" class="form-control" required="" aria-required="true">
-                              <option value=""> -- SELECCIONE -- </option>
-                              <?php
-                              $sucursal = new Login();
-                              $sucursal = $sucursal->ListarSucursales();
-                              for($i=0;$i<sizeof($sucursal);$i++){
-                                  ?>
-                                  <option value="<?php echo encrypt($sucursal[$i]['codsucursal']); ?>"><?php echo $sucursal[$i]['cuitsucursal'].": ".$sucursal[$i]['razonsocial']; ?></option>       
-                              <?php } ?>
-                            </select>
-                        </div> 
-                    </div>
-                </div>
-
-                    <div class="text-right">
-                        <button type="button" onClick="BuscaProductosxSucursal()" class="btn btn-danger"><span class="fa fa-search"></span> Realizar Búsqueda</button>
-                    </div>
-
-            </form>
-
-
-            </div>
-        </div>
-     </div>
-  </div>
-</div>
-<!-- End Row -->
-
-<div id="muestraproductos"></div>
-
-<?php } else { ?>
-
-<!-- Row -->
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header bg-danger">
-                <h4 class="card-title text-white"><i class="fa fa-tasks"></i> Productos</h4>
-            </div>
-
-            <div class="form-body">
-
-                <div class="card-body">
-
-                    <div class="row">
-
-                        <div class="col-md-8">
-                        <div class="btn-group m-b-20">
-                        <button type="button" class="btn waves-effect waves-light btn-light" data-placement="left" title="Carga Masiva" data-original-title="" data-href="#" data-toggle="modal" data-target="#myModall" data-backdrop="static" data-keyboard="false"><span class="fa fa-cloud-upload"></span> Cargar</font></button>
-
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-file-pdf-o"></i> Pdf</button>
-                            <div class="dropdown-menu dropdown-menu-left" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(164px, 35px, 0px);">
-                                
-                                <a class="dropdown-item" href="reportepdf?tipo=<?php echo encrypt("PRODUCTOS") ?>" target="_blank" rel="noopener noreferrer" data-toggle="tooltip" data-placement="bottom" title="Exportar Pdf"><span class="fa fa-file-pdf-o text-dark"></span> Listado General</a>
-
-                                <a class="dropdown-item" href="reportepdf?tipo=<?php echo encrypt("STOCKOPTIMO") ?>" target="_blank" rel="noopener noreferrer" data-toggle="tooltip" data-placement="bottom" title="Exportar Pdf"><span class="fa fa-file-pdf-o text-dark"></span> Stock Óptimo</a>
-
-                                <a class="dropdown-item" href="reportepdf?tipo=<?php echo encrypt("STOCKMEDIO") ?>" target="_blank" rel="noopener noreferrer" data-toggle="tooltip" data-placement="bottom" title="Exportar Pdf"><span class="fa fa-file-pdf-o text-dark"></span> Stock Medio</a>
-
-                                <a class="dropdown-item" href="reportepdf?tipo=<?php echo encrypt("STOCKMINIMO") ?>" target="_blank" rel="noopener noreferrer" data-toggle="tooltip" data-placement="bottom" title="Exportar Pdf"><span class="fa fa-file-pdf-o text-dark"></span> Stock Minimo</a>
-
-                                <a class="dropdown-item" href="reportepdf?tipo=<?php echo encrypt("CODIGOBARRAS") ?>" target="_blank" rel="noopener noreferrer"  data-toggle="tooltip" data-placement="bottom" title="Exportar Pdf"><span class="fa fa-barcode text-dark"></span> Código Barras</a>
-
-                            </div>
-                        </div> 
-
-
-                        <a class="btn waves-effect waves-light btn-light" href="reporteexcel?documento=<?php echo encrypt("EXCEL") ?>&tipo=<?php echo encrypt("PRODUCTOS") ?>" data-toggle="tooltip" data-placement="bottom" title="Exportar Excel"><span class="fa fa-file-excel-o text-dark"></span> Excel</a>
-
-                        <a class="btn waves-effect waves-light btn-light" href="reporteexcel?documento=<?php echo encrypt("WORD") ?>&tipo=<?php echo encrypt("PRODUCTOS") ?>" data-toggle="tooltip" data-placement="bottom" title="Exportar Word"><span class="fa fa-file-word-o text-dark"></span> Word</a>
-
-                        <a class="btn waves-effect waves-light btn-light" href="reporteexcel?documento=<?php echo encrypt("EXCEL") ?>&tipo=<?php echo encrypt("PRODUCTOSCSV") ?>" data-toggle="tooltip" data-placement="bottom" title="Exportar Excel"><span class="fa fa-file-excel-o text-dark"></span> CSV</a>
-
+                    <!-- Toolbar -->
+                    <div class="p-4 border-b border-gray-100 flex gap-4 bg-gray-50">
+                        <div class="relative flex-1">
+                            <input type="text" x-model="search" @input.debounce.500ms="fetchProducts()" placeholder="Buscar por código o nombre..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </div>
+                        <button @click="fetchProducts()" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto table-container">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                    <th class="p-4 font-semibold w-24">Código</th>
+                                    <th class="p-4 font-semibold">Producto</th>
+                                    <th class="p-4 font-semibold w-32 text-right">Precio</th>
+                                    <th class="p-4 font-semibold w-24 text-center">Stock</th>
+                                    <th class="p-4 font-semibold w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <template x-for="product in products" :key="product.id">
+                                    <tr class="hover:bg-gray-50 transition group">
+                                        <!-- Código -->
+                                        <td class="p-4 text-sm text-gray-500 font-mono" x-text="product.codproducto"></td>
+
+                                        <!-- Nombre + Foto -->
+                                        <td class="p-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="h-10 w-10 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-200">
+                                                    <template x-if="product.foto_url">
+                                                        <img :src="product.foto_url" class="h-full w-full object-cover">
+                                                    </template>
+                                                    <template x-if="!product.foto_url">
+                                                        <div class="h-full w-full flex items-center justify-center text-gray-400 font-bold text-xs">
+                                                            <span x-text="getInitials(product.nombre)"></span>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                                <div class="font-semibold text-gray-800 text-sm truncate max-w-xs" x-text="product.nombre"></div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Precio (Editable) -->
+                                        <td class="p-2 text-right">
+                                            <div class="relative">
+                                                <span class="absolute left-3 top-2.5 text-gray-400 text-xs">C$</span>
+                                                <input type="number"
+                                                       x-model="product.precio"
+                                                       @focus="$el.select()"
+                                                       @keyup.enter="$el.blur()"
+                                                       @blur="updateProduct(product.id, 'precio', $event.target.value)"
+                                                       class="w-full text-right bg-transparent border-0 rounded-md py-2 px-3 pl-8 font-mono text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                                                >
+                                            </div>
+                                        </td>
+
+                                        <!-- Stock (Editable) -->
+                                        <td class="p-2 text-center">
+                                            <input type="number"
+                                                   x-model="product.stock"
+                                                   @focus="$el.select()"
+                                                   @keyup.enter="$el.blur()"
+                                                   @blur="updateProduct(product.id, 'stock', $event.target.value)"
+                                                   class="w-full text-center bg-transparent border-0 rounded-md py-2 px-2 font-mono text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                                                   :class="product.stock <= 5 ? 'text-red-600 font-bold' : ''"
+                                            >
+                                        </td>
+
+                                        <!-- Actions/Status -->
+                                        <td class="p-4 text-center">
+                                            <div x-show="product.status === 'saving'" class="text-indigo-500 animate-spin">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                            </div>
+                                            <div x-show="product.status === 'saved'" x-transition.duration.1000ms class="text-green-500">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr x-show="products.length === 0">
+                                    <td colspan="5" class="p-8 text-center text-gray-400">
+                                        No se encontraron productos.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <div id="productos"></div>
-
-            </div>
+            </main>
         </div>
-     </div>
-  </div>
-</div>
-<!-- End Row -->
-
-<?php } ?>
-
-                <!-- ============================================================== -->
-                <!-- End PAge Content -->
-                <!-- ============================================================== -->
-                <!-- ============================================================== -->
-                <!-- Right sidebar -->
-                <!-- ============================================================== -->
-                <!-- .right-sidebar -->
-                <!-- ============================================================== -->
-                <!-- End Right sidebar -->
-                <!-- ============================================================== -->
-            </div>
-            <!-- ============================================================== -->
-            <!-- End Container fluid  -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- footer -->
-            <!-- ============================================================== -->
-            <footer class="footer text-center">
-                <i class="fa fa-copyright"></i> <span class="current-year"></span>.
-            </footer>
-            <!-- ============================================================== -->
-            <!-- End footer -->
-            <!-- ============================================================== -->
-        </div>
-        <!-- ============================================================== -->
-        <!-- End Page wrapper  -->
-        <!-- ============================================================== -->
     </div>
-    <!-- ============================================================== -->
-    <!-- End Wrapper -->
-    <!-- ============================================================== -->
-   
 
-    <!-- ============================================================== -->
-    <!-- All Jquery -->
-    <!-- ============================================================== -->
+    <!-- TOAST NOTIFICATION -->
+    <div x-data="{ show: false, message: '' }"
+         @notify.window="show = true; message = $event.detail; setTimeout(() => show = false, 3000)"
+         class="fixed bottom-5 right-5 z-50"
+         x-cloak>
+        <div x-show="show"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-2"
+             class="bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl flex items-center gap-3">
+            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span x-text="message"></span>
+        </div>
+    </div>
+
+    <!-- LEGACY SCRIPTS -->
     <script src="assets/script/jquery.min.js"></script> 
-    <script src="assets/js/popper.min.js"></script> 
     <script src="assets/js/bootstrap.js"></script>
-    <!-- apps -->
-    <script src="assets/js/app.min.js"></script>
-    <script src="assets/js/app.init.horizontal-fullwidth.js"></script>
-    <script src="assets/js/app-style-switcher.js"></script>
-    <!-- slimscrollbar scrollbar JavaScript -->
-    <script src="assets/js/perfect-scrollbar.js"></script>
-    <script src="assets/js/sparkline.js"></script>
-    <!--Wave Effects -->
-    <script src="assets/js/waves.js"></script>
-    <!-- Sweet-Alert -->
-    <script src="assets/js/sweetalert-dev.js"></script>
-    <!--Menu sidebar -->
-    <script src="assets/js/sidebarmenu.js"></script>
-    <!--Custom JavaScript -->
+    <script src="assets/js/sidebar-nav.js"></script>
     <script src="assets/js/custom.js"></script>
-    <!-- Custom file upload -->
-    <script src="assets/plugins/fileupload/bootstrap-fileupload.min.js"></script>
 
-    <!-- script jquery -->
-    <script type="text/javascript" src="assets/script/titulos.js"></script>
-    <script type="text/javascript" src="assets/script/script2.js"></script>
-    <script type="text/javascript" src="assets/script/validation.min.js"></script>
-    <script type="text/javascript" src="assets/script/script.js"></script>
-    <link rel="stylesheet" href="assets/calendario/jquery-ui.css" />
-    <script src="assets/calendario/jquery-ui.js"></script>
-    <!-- script jquery -->
+    <!-- LOGIC -->
+    <script>
+        function productsGrid() {
+            return {
+                products: [],
+                search: '',
 
-    <!-- jQuery -->
-    <script src="assets/plugins/noty/packaged/jquery.noty.packaged.min.js"></script>
-    <script type="text/jscript">
-    $('#productos').append('<center><p><i class="fa fa-spin fa-spinner"></i> Por favor espere, cargando registros ......</p></center>').fadeIn("slow");
-    setTimeout(function() {
-    $('#productos').load("consultas?CargaProductos=si");
-     }, 3000);
+                init() {
+                    this.fetchProducts();
+                },
+
+                fetchProducts() {
+                    fetch(`api/listar_productos.php?q=${this.search}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            this.products = data.map(p => ({
+                                ...p,
+                                status: 'idle' // idle, saving, saved, error
+                            }));
+                        })
+                        .catch(e => console.error(e));
+                },
+
+                updateProduct(id, field, value) {
+                    const product = this.products.find(p => p.id === id);
+                    if (!product) return;
+
+                    // Optimistic UI? Maybe wait for response to be safe but show loading
+                    product.status = 'saving';
+
+                    fetch('api/actualizar_producto_inline.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id, field, value })
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.success || res.status === 'success') {
+                            product.status = 'saved';
+                            this.$dispatch('notify', 'Producto actualizado correctamente');
+                            setTimeout(() => product.status = 'idle', 2000);
+                        } else {
+                            product.status = 'error';
+                            // Revert? Hard to revert without keeping old value.
+                            // For now just alert.
+                            alert('Error al guardar: ' + (res.error || 'Desconocido'));
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        product.status = 'error';
+                    });
+                },
+
+                getInitials(name) {
+                    return name ? name.substring(0, 2).toUpperCase() : '??';
+                }
+            }
+        }
     </script>
-    <!-- jQuery -->
-    
-
 </body>
 </html>
-
-<?php } else { ?>   
-        <script type='text/javascript' language='javascript'>
-        alert('NO TIENES PERMISO PARA ACCEDER A ESTA PAGINA.\nCONSULTA CON EL ADMINISTRADOR PARA QUE TE DE ACCESO')  
-        document.location.href='panel'   
-        </script> 
-<?php } } else { ?>
-        <script type='text/javascript' language='javascript'>
-        alert('NO TIENES PERMISO PARA ACCEDER AL SISTEMA.\nDEBERA DE INICIAR SESION')  
-        document.location.href='logout'  
-        </script> 
-<?php } ?>
