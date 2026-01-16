@@ -4,12 +4,19 @@ ob_start();
 
 require('fpdf/fpdf.php');
 require_once 'includes/db.php';
+require_once 'includes/config.php';
 
 $codVenta = $_GET['cod'] ?? '';
 if (!$codVenta) die("Error: Ticket no especificado.");
 
 try {
     $db = DB::connect();
+
+    // 0. Obtener Configuración del Sistema (DINÁMICO)
+    $sqlConfig = "SELECT cuit, nomsucursal, tlfsucursal, direcsucursal FROM configuracion WHERE id = 1 LIMIT 1";
+    $stmtConfig = $db->prepare($sqlConfig);
+    $stmtConfig->execute();
+    $config = $stmtConfig->fetch(PDO::FETCH_ASSOC);
 
     // 1. Obtener Cabecera (Venta + Cliente)
     $sqlHead = "SELECT v.*, c.nomcliente 
@@ -23,7 +30,6 @@ try {
     if (!$venta) die("Error: Venta no encontrada.");
 
     // 2. Obtener Detalles (CON JOIN CORRECTO)
-    // Unimos detalleventas con productos para sacar el nombre
     $sqlDet = "SELECT d.cantventa, d.precioventa, (d.cantventa * d.precioventa) as importe, p.producto as nombre_prod
                FROM detalleventas d 
                LEFT JOIN productos p ON d.codproducto = p.codproducto
@@ -38,11 +44,13 @@ try {
     $pdf->SetMargins(4, 4, 4);
     $pdf->SetAutoPageBreak(true, 5);
 
-    // Encabezado
+    // Encabezado (DATOS DINÁMICOS)
     $pdf->SetFont('Courier','B',10);
-    $pdf->Cell(72,5,"POS UNICORNIO",0,1,'C');
+    $pdf->Cell(72,5, utf8_decode(strtoupper($config['nomsucursal'] ?? 'POS UNICORNIO')), 0, 1, 'C');
     $pdf->SetFont('Courier','',8);
-    $pdf->Cell(72,4,"RUC: J0310000000000",0,1,'C');
+    $pdf->Cell(72,4, "RUC: " . ($config['cuit'] ?? 'N/A'), 0, 1, 'C');
+    $pdf->Cell(72,4, utf8_decode($config['direcsucursal'] ?? ''), 0, 1, 'C');
+    $pdf->Cell(72,4, "Tel: " . ($config['tlfsucursal'] ?? ''), 0, 1, 'C');
     $pdf->Cell(72,4,"----------------------------------------",0,1,'C');
 
     // Info Venta
@@ -86,8 +94,18 @@ try {
     $pdf->Cell(72, 4, utf8_decode("¡Gracias por su compra!"), 0, 1, 'C');
     $pdf->SetFont('Courier','',8);
     $pdf->Cell(72, 4, utf8_decode("Vuelva pronto"), 0, 1, 'C');
-    $pdf->Ln(1);
-    $pdf->Cell(72, 3, "www.gruponortex.com", 0, 1, 'C');
+    $pdf->Ln(3);
+    
+    // ========== FOOTER VIRAL (INSTALADOR) ==========
+    $pdf->SetFont('Courier','B',7);
+    $pdf->SetTextColor(100, 100, 100); // Gris
+    $pdf->Cell(72, 3, "Sistema POS Unicornio", 0, 1, 'C');
+    $pdf->SetFont('Courier','',7);
+    $pdf->Cell(72, 3, utf8_decode("Instalado por: " . INSTALLER_COMPANY), 0, 1, 'C');
+    $pdf->Cell(72, 3, "Tel: " . INSTALLER_PHONE, 0, 1, 'C');
+    if (defined('INSTALLER_WEBSITE')) {
+        $pdf->Cell(72, 3, INSTALLER_WEBSITE, 0, 1, 'C');
+    }
     
     // Limpiamos buffer y salimos
     ob_end_clean();

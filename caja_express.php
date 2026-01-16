@@ -233,10 +233,9 @@
                     Cancelar
                 </button>
                 <button type="button" @click="confirmarCierre()" 
-                        :disabled="!montoCierre || procesandoCierre"
-                        class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 shadow-lg transform active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span x-show="!procesandoCierre">CONFIRMAR</span>
-                    <span x-show="procesandoCierre">PROCESANDO...</span>
+                        class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 shadow-lg transform active:scale-95 transition">
+                    <span x-show="!procesandoCierre">CERRAR CAJA</span>
+                    <span x-show="procesandoCierre">CERRANDO...</span>
                 </button>
             </div>
 
@@ -271,6 +270,31 @@
                 </button>
             </div>
         </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CIERRE EXITOSO (Nuevo para evitar bloqueos de popup) -->
+    <div x-show="cierreExitoso" x-cloak 
+         class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] backdrop-blur-md"
+         x-transition.opacity>
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center animate-bounce-in">
+            <div class="mb-4 bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                <span class="text-5xl">✅</span>
+            </div>
+            <h3 class="text-3xl font-extrabold text-gray-800 mb-2">¡Caja Cerrada!</h3>
+            <p class="text-gray-500 mb-6">El turno ha finalizado correctamente.</p>
+            
+            <a :href="reporteUrl" target="_blank" 
+               class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-105 mb-3 flex items-center justify-center gap-2">
+                <span>📄</span> IMPRIMIR REPORTE
+            </a>
+            
+            <button @click="cierreExitoso = false; montoApertura = ''" 
+                    class="block w-full text-gray-400 hover:text-gray-600 font-semibold py-2">
+                Cerrar y volver
+            </button>
+        </div>
     </div>
 
 
@@ -284,7 +308,11 @@
                 montoCierre: '',
                 modalCierre: false,
                 comentariosCierre: '',
-                procesandoCierre: false, // Flag para evitar doble clic
+                procesandoCierre: false,
+                
+                // Nuevo estado para éxito
+                cierreExitoso: false,
+                reporteUrl: '',
                 
                 // Movimientos
                 modalMovimiento: false,
@@ -376,70 +404,46 @@
                 },
 
                 confirmarCierre() {
-                    console.log('🔴 Click en CONFIRMAR detectado');
+                    if (this.procesandoCierre) return;
                     
-                    // Evitar múltiples clicks
-                    if (this.procesandoCierre) {
-                        console.log('⏳ Ya hay un cierre en proceso, ignorando...');
-                        return;
+                    let montoRaw = this.montoCierre;
+                    let monto = parseFloat(montoRaw);
+                    
+                    if (!monto || monto <= 0) {
+                        return alert("Ingrese el monto contado en mano válido");
                     }
                     
-                    console.log('Monto ingresado:', this.montoCierre);
-                    
-                    if (!this.montoCierre || this.montoCierre <= 0) {
-                        console.log('❌ Validación falló: monto inválido');
-                        return alert("Ingrese el monto contado");
-                    }
-                    
-                    console.log('✅ Validación OK, mostrando confirm...');
-                    if (!confirm("¿Confirmar cierre de caja? Esta acción no se puede deshacer.")) {
-                        console.log('❌ Usuario canceló en confirm()');
-                        return;
-                    }
+                    if (!confirm("¿Confirmar cierre de caja? Esta acción no se puede deshacer.")) return;
 
-                    this.procesandoCierre = true; // Bloquear más clicks
-                    console.log('🚀 Enviando petición a API...');
+                    this.procesandoCierre = true;
+                    
                     fetch('api/caja_control.php?accion=cerrar', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
-                            efectivo: this.montoCierre,
+                            efectivo: monto,
                             comentarios: this.comentariosCierre || ''
                         })
                     })
-                    .then(r => {
-                        console.log('📥 Respuesta recibida:', r.status);
-                        return r.json();
-                    })
+                    .then(r => r.json())
                     .then(data => {
-                        console.log('📦 Data parseada:', data);
+                        this.procesandoCierre = false;
+                        
                         if(data.status === 'ok') {
-                            console.log('✅ Cierre exitoso, abriendo PDF...');
-                            // Abrir reporte PDF usando link temporal (más confiable que window.open)
-                            const link = document.createElement('a');
-                            link.href = 'imprimir_cierre.php?codarqueo=' + data.codarqueo;
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            
                             this.modalCierre = false;
                             this.montoCierre = '';
                             this.comentariosCierre = '';
-                            this.procesandoCierre = false; // Resetear para permitir próximos cierres
+                            this.reporteUrl = 'imprimir_cierre.php?codarqueo=' + data.codarqueo;
+                            this.cierreExitoso = true;
                             this.fetchEstado();
-                            alert("✅ Caja cerrada correctamente. Diferencia: C$ " + data.diferencia.toFixed(2));
                         } else {
-                            console.log('❌ Error del servidor:', data.message);
-                            this.procesandoCierre = false;
-                            alert("❌ ERROR: " + (data.message || "Error al cerrar"));
+                            alert("❌ ERROR: " + (data.message || "Error desconocido"));
                         }
                     })
                     .catch(err => {
-                        console.error('💥 Error en fetch:', err);
+                        console.error(err);
                         this.procesandoCierre = false;
-                        alert("❌ Error de conexión al cerrar caja");
+                        alert("❌ Error de conexión: " + err.message);
                     });
                 },
 

@@ -18,6 +18,7 @@ npm-debug.log
 # Config & Secrets
 .env
 includes/db.php
+includes/config.php
 config.php
 ftp-config.json
 secret.json
