@@ -21,7 +21,8 @@ if (session_status() === PHP_SESSION_NONE) {
 function verificar_acceso_api() {
     // Si no hay usuario en sesión, denegar acceso
     // Se permiten excepciones si definimos una constante API_PUBLIC antes de incluir este archivo
-    if (!defined('API_PUBLIC') && empty($_SESSION['id_usuario'])) {
+    // Soporte híbrido: 'id_usuario' (SaaS) O 'codigo' (Legacy)
+    if (!defined('API_PUBLIC') && empty($_SESSION['id_usuario']) && empty($_SESSION['codigo'])) {
         http_response_code(401);
         echo json_encode([
             'status' => 'error',

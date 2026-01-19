@@ -118,15 +118,17 @@
         </div>
     </div>
 
-    <!-- MODAL DE PAGO -->
-    <div x-show="modalPago" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-            <div class="p-6 bg-gray-50 border-b flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-800">Procesar Pago</h3>
-                <button @click="modalPago = false" class="text-gray-400 hover:text-gray-600">✕</button>
+    <!-- MODAL DE PAGO - RESPONSIVE -->
+    <div x-show="modalPago" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden transform transition-all">
+            <!-- Header Sticky -->
+            <div class="p-4 bg-gray-50 border-b flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold text-gray-800">💳 Procesar Pago</h3>
+                <button @click="modalPago = false" class="text-gray-400 hover:text-gray-600 text-xl">✕</button>
             </div>
             
-            <div class="p-6 space-y-6">
+            <!-- Contenido Scrolleable -->
+            <div class="p-4 space-y-4 overflow-y-auto flex-1">
                 
                 <!-- Buscador Cliente -->
                 <div class="relative">
@@ -203,32 +205,103 @@
                     </div>
                 </div>
 
-                <!-- Resumen Pago -->
-                <div class="bg-gray-100 p-4 rounded-xl">
-                    <div class="flex justify-between text-lg mb-2">
-                        <span>Total a Pagar:</span>
-                        <span class="font-bold" x-text="'C$ ' + total()"></span>
+                <!-- SECCIÓN DE PAGO COMPACTA Y RESPONSIVE -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
+                    
+                    <!-- Total a Pagar -->
+                    <div class="flex justify-between items-center mb-3 pb-3 border-b-2 border-gray-300">
+                        <span class="text-gray-600 font-medium">Total a Pagar</span>
+                        <span class="font-black text-2xl text-gray-900" x-text="'C$ ' + total()"></span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span>Paga con:</span>
-                        <input type="number" x-model="pagoCon" class="w-32 p-2 border rounded text-right font-bold text-lg" step="0.01">
+
+                    <!-- Campo de Pago con Botón Exacto -->
+                    <div class="mb-3">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Recibido del Cliente</label>
+                        <div class="flex gap-2">
+                            <input type="number" 
+                                   x-model="pagoCon" 
+                                   x-ref="inputPago"
+                                   @keydown.enter="confirmarVenta()"
+                                   class="flex-1 p-3 border-2 rounded-xl text-right font-black text-2xl outline-none transition-all"
+                                   :class="validacionPago()"
+                                   step="0.01"
+                                   placeholder="0.00">
+                            <button @click="pagoCon = total()" 
+                                    class="px-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition shadow-lg text-sm">
+                                💯<br>Exacto
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex justify-between text-lg mt-2 pt-2 border-t border-gray-300 text-green-600 font-bold">
-                        <span>Cambio:</span>
-                        <span x-text="'C$ ' + cambio()"></span>
+
+                    <!-- Botones de Denominación Rápida - MÁS COMPACTOS -->
+                    <div class="mb-3">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">⚡ PAGO RÁPIDO</label>
+                        <div class="grid grid-cols-5 gap-1">
+                            <button @click="pagoCon = 50" 
+                                    class="py-2 bg-green-100 hover:bg-green-200 text-green-800 font-bold rounded-lg transition shadow text-xs">
+                                C$ 50
+                            </button>
+                            <button @click="pagoCon = 100" 
+                                    class="py-2 bg-green-100 hover:bg-green-200 text-green-800 font-bold rounded-lg transition shadow text-xs">
+                                C$ 100
+                            </button>
+                            <button @click="pagoCon = 200" 
+                                    class="py-2 bg-green-100 hover:bg-green-200 text-green-800 font-bold rounded-lg transition shadow text-xs">
+                                C$ 200
+                            </button>
+                            <button @click="pagoCon = 500" 
+                                    class="py-2 bg-green-100 hover:bg-green-200 text-green-800 font-bold rounded-lg transition shadow text-xs">
+                                C$ 500
+                            </button>
+                            <button @click="pagoCon = 1000" 
+                                    class="py-2 bg-green-100 hover:bg-green-200 text-green-800 font-bold rounded-lg transition shadow text-xs">
+                                C$ 1000
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- CAMBIO DESTACADO - RESPONSIVE -->
+                    <div class="p-4 rounded-xl text-center transform transition-all"
+                         :class="cambioClase()">
+                        <div class="text-xs font-bold uppercase tracking-wider mb-1" 
+                             :class="parseFloat(cambio()) < 0 ? 'text-red-700' : 'text-green-700'">
+                            <span x-show="parseFloat(cambio()) >= 0">💰 Cambio a Devolver</span>
+                            <span x-show="parseFloat(cambio()) < 0">⚠️ Falta por Pagar</span>
+                        </div>
+                        <div class="font-black text-4xl tracking-tight" 
+                             :class="parseFloat(cambio()) < 0 ? 'text-red-600' : 'text-green-600'"
+                             x-text="'C$ ' + Math.abs(parseFloat(cambio())).toFixed(2)">
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
 
-            <div class="p-6 bg-gray-50 border-t flex gap-3">
-                <button @click="modalPago = false" class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300">Cancelar</button>
-                <button @click="confirmarVenta()" 
-                        :disabled="parseFloat(pagoCon) < parseFloat(total())"
-                        :class="parseFloat(pagoCon) < parseFloat(total()) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'"
-                        class="flex-1 py-3 bg-green-500 text-white rounded-xl font-bold shadow-lg">
-                    Confirmar Venta
-                </button>
+            <!-- Botones de Acción - STICKY AL FONDO -->
+            <div class="p-4 bg-gradient-to-br from-gray-50 to-gray-100 border-t-4 border-green-500 shrink-0">
+                <div class="flex gap-2">
+                    <!-- Botón Cancelar -->
+                    <button @click="modalPago = false" 
+                            class="flex-1 py-3 px-4 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-xl font-bold transition shadow-lg transform hover:scale-105 active:scale-95">
+                        ❌ Cancelar
+                    </button>
+                    
+                    <!-- Botón Confirmar Venta - COMPACTO -->
+                    <button @click="confirmarVenta()" 
+                            :disabled="parseFloat(pagoCon) < parseFloat(total())"
+                            :class="parseFloat(pagoCon) < parseFloat(total()) ? 
+                                    'opacity-50 cursor-not-allowed bg-gray-400' : 
+                                    'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-xl'"
+                            class="flex-1 py-3 px-4 text-white rounded-xl font-black text-lg transition-all transform hover:scale-105 active:scale-95 border-2 border-green-400">
+                        <span x-show="parseFloat(pagoCon) >= parseFloat(total())" class="flex items-center justify-center gap-2">
+                            ✅ CONFIRMAR VENTA
+                        </span>
+                        <span x-show="parseFloat(pagoCon) < parseFloat(total())" class="flex items-center justify-center gap-2">
+                            ⚠️ Pago Insuficiente
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -417,6 +490,25 @@
                     }, 0).toFixed(2);
                 },
 
+                // FUNCIONES PARA MODAL MODERNIZADO
+                cambio() {
+                    return (parseFloat(this.pagoCon || 0) - parseFloat(this.total())).toFixed(2);
+                },
+
+                validacionPago() {
+                    const pago = parseFloat(this.pagoCon) || 0;
+                    const tot = parseFloat(this.total());
+                    if (pago === 0) return 'border-gray-300 focus:border-blue-500';
+                    if (pago < tot) return 'border-red-500 bg-red-50 focus:border-red-600';
+                    return 'border-green-500 bg-green-50 focus:border-green-600';
+                },
+
+                cambioClase() {
+                    const camb = parseFloat(this.cambio());
+                    if (camb < 0) return 'bg-red-100 border-2 border-red-300';
+                    return 'bg-green-100 border-2 border-green-300';
+                },
+
                 // Lógica Modal
                 abrirModalPago() {
                     if (this.carrito.length === 0) return alert("Carrito vacío");
@@ -425,6 +517,10 @@
                     this.clienteSeleccionado = null;
                     this.busquedaCliente = '';
                     this.clientesEncontrados = [];
+                    // Auto-focus en el input de pago
+                    this.$nextTick(() => {
+                        if(this.$refs.inputPago) this.$refs.inputPago.select();
+                    });
                 },
 
                 buscarCliente() {
