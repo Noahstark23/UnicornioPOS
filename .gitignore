@@ -1,10 +1,17 @@
-# System
+# ============================================
+# Unicornio POS - GitIgnore
+# ============================================
+
+# System Files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# VS Code
+# IDE / Editors
 .vscode/
 .idea/
+*.sublime-*
+*.code-workspace
 
 # PHP / Composer
 vendor/
@@ -14,23 +21,66 @@ composer.lock
 node_modules/
 package-lock.json
 npm-debug.log
+yarn.lock
 
-# Config & Secrets
+# Config & Secrets (NEVER COMMIT)
 .env
+.env.local
+.env.production
 includes/db.php
 includes/config.php
 config.php
 ftp-config.json
 secret.json
 
-# Logs
+# Logs & Debug Files
 *.log
 error_log
 logs/
+debug_*.php
+debug_*.txt
 
-# Backups
+# Backups & Temporary SQL
 *.bak
 *.old
-*.sql
-*.zip
-*.rar
+*.tmp
+backups/*.sql
+backups/*.zip
+backups/*.rar
+
+# Schema SQL files to KEEP (exception)
+!bd-sql/*.sql
+!unicornio*.sql
+
+# User Uploaded Files (Photos, Documents)
+fotos/clientes/*
+fotos/productos/*
+fotos/sucursales/*
+fotos/usuarios/*
+!fotos/**/.gitkeep
+
+# Session & Cache
+sessions/
+cache/
+tmp/
+
+# Output Files (Reports, Exports)
+reportes/*.pdf
+reportes/*.xlsx
+exports/
+
+# OS Specific
+*.swp
+*.swo
+*~
+.directory
+
+# Test & Debug Output
+test_output/
+*.test
+debug_output*.txt
+block_*.txt
+line_*.txt
+split_output.txt
+save_*.php
+snippet_*.php

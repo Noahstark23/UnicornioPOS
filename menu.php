@@ -5,6 +5,121 @@ if(isset($_SESSION['acceso'])) {
 $count = new Login();
 $p = $count->ContarRegistros();
 ?>
+<!-- MODERN MENU OVERLAY STYLES -->
+<!-- MODERN UNICORNIO THEME v2 -->
+<!-- MODERN UNICORNIO THEME v3 (Menu Fix) -->
+<!-- MODERN UNICORNIO THEME v4 (Premium Rounded) -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* 1. TYPOGRAPHY & RESET */
+    body { font-family: 'Inter', sans-serif !important; }
+    
+    /* 2. HEADER / TOPBAR (White & Clean) */
+    .topbar { background: #ffffff !important; box-shadow: 0 4px 12px 0 rgba(0,0,0,0.05) !important; border-bottom: none !important; }
+    .topbar .navbar-header { background: #ffffff !important; box-shadow: none !important; border-right: 1px solid #f1f5f9; }
+    /* Logo Restore */
+    .logo-icon img, .logo-text img { filter: none !important; opacity: 1 !important; }
+    
+    /* 3. SIDEBAR / NAVBAR CONTAINER */
+    /* This handles the main horizontal/vertical bar background */
+    .left-sidebar { 
+        background: radial-gradient(circle at top left, #312e81, #1e1b4b) !important; /* Deep Indigo Theme */
+        box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+        border-right: none !important;
+    }
+    
+    /* 4. NAVIGATION LINKS (Top Level) */
+    .sidebar-nav ul li a { 
+        color: #cbd5e1 !important; /* Slate 300 - Readable on dark */
+        padding: 12px 20px !important; 
+        font-weight: 500 !important;
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease;
+    }
+    .sidebar-nav ul li a i { 
+        color: #818cf8 !important; /* Bright Indigo */
+        font-size: 1.3rem; 
+        margin-right: 10px;
+        transition: transform 0.2s;
+    }
+
+    /* Top Level Hover */
+    .sidebar-nav ul li a:hover { 
+        background: rgba(255,255,255,0.1) !important;
+        color: #ffffff !important;
+        border-radius: 8px; /* Rounded Hover logic for items */
+        margin: 0 5px; /* Spacing for hover pill effect */
+    }
+    .sidebar-nav ul li a:hover i { transform: scale(1.1); color: #ffffff !important; }
+
+    /* Top Level Active */
+    .sidebar-nav ul li a.active, .sidebar-nav > ul > li > a.active { 
+        background: linear-gradient(90deg, #4f46e5 0%, #4338ca 100%) !important; /* Solid Gradient Highlight */
+        color: #ffffff !important;
+        border-left: none !important;
+        border-radius: 12px !important; /* Active is nice pill shape */
+        margin: 0 5px !important; /* Spacing */
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important; /* Glow effect */
+    }
+    .sidebar-nav ul li a.active i { color: #ffffff !important; }
+
+    /* ========================================= */
+    /* 5. SUBMENUS (DROPDOWNS) - PREMIUM ROUNDED */
+    /* ========================================= */
+    .sidebar-nav ul .sidebar-item .first-level, 
+    .sidebar-nav ul .sidebar-item .second-level { 
+        background-color: #1e1b4b !important; /* Dark Indigo Base */
+        box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4) !important; /* Softer, deeper shadow */
+        padding: 8px !important; /* Padding for inner spacing */
+        border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Glass border */
+        border-radius: 16px !important; /* THE ROUNDED CORNERS YOU WANTED */
+        min-width: 240px !important; 
+        z-index: 9999 !important;
+        margin-top: 5px !important; /* Slight offset */
+    }
+    
+    /* Submenu Links */
+    .sidebar-nav ul .sidebar-item .first-level .sidebar-item .sidebar-link,
+    .sidebar-nav ul .sidebar-item .second-level .sidebar-item .sidebar-link {
+        color: #e2e8f0 !important; 
+        font-size: 0.9rem !important;
+        padding: 10px 15px !important;
+        margin: 2px 0 !important;
+        background: transparent !important;
+        border-radius: 10px !important; /* Inner rounded items */
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Submenu Icons */
+    .sidebar-nav ul .sidebar-item .first-level .sidebar-item .sidebar-link i,
+    .sidebar-nav ul .sidebar-item .second-level .sidebar-item .sidebar-link i {
+        font-size: 1rem !important;
+        color: #818cf8 !important; 
+    }
+
+    /* Submenu Hover */
+    .sidebar-nav ul .sidebar-item .first-level .sidebar-item .sidebar-link:hover,
+    .sidebar-nav ul .sidebar-item .second-level .sidebar-item .sidebar-link:hover {
+        background-color: #312e81 !important; /* Lighter Indigo on hover */
+        color: #ffffff !important; /* White text on hover */
+        padding-left: 25px !important; /* Slide effect */
+    }
+    
+    .sidebar-nav ul .sidebar-item .first-level .sidebar-item .sidebar-link:hover i,
+    .sidebar-nav ul .sidebar-item .second-level .sidebar-item .sidebar-link:hover i {
+        color: #f472b6 !important; /* Pink icon on hover */
+    }
+
+    /* 6. EXTRAS */
+    /* Search & User Profile */
+    .topbar .navbar-nav > li > a .text-dark { color: #1e293b !important; font-weight: 700 !important; }
+    .topbar .navbar-nav > li > a .text-info { color: #4f46e5 !important; background: #e0e7ff; padding: 4px 10px; border-radius: 20px; font-weight: 700 !important; font-size: 0.75rem; }
+    .app-search .form-control { background: #f8fafc !important; border: 2px solid #e2e8f0 !important; border-radius: 50px; color: #334155 !important; }
+    .app-search .form-control:focus { border-color: #6366f1 !important; background: #fff !important; }
+    .notify .heartbit { border-color: #f472b6 !important; } .notify .point { background-color: #ec4899 !important; }
+    .nav-toggler i { color: #334155 !important; }
+</style>
 
         <!-- ============================================================== -->
         <!-- Topbar header - style you can find in pages.scss -->
@@ -320,25 +435,7 @@ case 'administradorG':  ?>
 
                         <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="sucursales" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Sucursales</a></li>
 
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-collage"></i><span class="hide-menu">Productos</span></a>
-                            <ul aria-expanded="false" class="collapse second-level">
-
-                                <li class="sidebar-item"><a href="familias" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Familias</span></a></li>
-
-                                <li class="sidebar-item"><a href="subfamilias" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Sub-Familias</span></a></li>
-
-                                <li class="sidebar-item"><a href="marcas" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Marcas</span></a></li>
-
-                                <li class="sidebar-item"><a href="modelos" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Modelos</span></a></li>
-
-                                <li class="sidebar-item"><a href="presentaciones" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Presentaciones</span></a></li>
-
-                                <li class="sidebar-item"><a href="colores" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Colores</span></a></li>
-
-                                <li class="sidebar-item"><a href="origenes" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Origenes</span></a></li>
-
-                            </ul>
-                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="productos.php" aria-expanded="false"><i class="mdi mdi-cube"></i><span class="hide-menu">Inventario (Matriz)</span></a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Usuarios</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -369,18 +466,7 @@ case 'administradorG':  ?>
 
                         <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clients_saas.php" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
 
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Proveedores</span></a>
-                            <ul aria-expanded="false" class="collapse second-level">
-
-                                <li class="sidebar-item"><a href="proveedores" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Proveedores</span></a></li>
-
-                                <li class="sidebar-item"><a href="forpedido" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Nuevo Pedido</span></a></li>
-
-                                <li class="sidebar-item"><a href="pedidos" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Consulta Pedidos</span></a></li>
-
-                                <li class="sidebar-item"><a href="busquedapedidos" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Reporte Pedidos</span></a></li>
-                            </ul>
-                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="proveedores.php" aria-expanded="false"><i class="mdi mdi-truck-delivery"></i><span class="hide-menu">Gestión Proveedores</span></a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-collage"></i><span class="hide-menu">Almacen</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -398,17 +484,7 @@ case 'administradorG':  ?>
                             </ul>
                         </li>
 
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-collage"></i><span class="hide-menu">Kardex Productos</span></a>
-                            <ul aria-expanded="false" class="collapse second-level">
-
-                                <li class="sidebar-item"><a href="buscakardex" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Kardex de Productos</span></a></li>
-
-                                <li class="sidebar-item"><a href="kardexvalorizado" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Kardex Valorizado</span></a></li>
-
-                                <li class="sidebar-item"><a href="kardexfechas" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Valorizado por Fechas</span></a></li>
-
-                            </ul>
-                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="kardex.php" aria-expanded="false"><i class="mdi mdi-chart-areaspline"></i><span class="hide-menu">Inventario Valorizado</span></a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Traspasos</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -573,25 +649,7 @@ case 'administradorS': ?>
                         </li>
 
 
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-collage"></i><span class="hide-menu">Productos</span></a>
-                            <ul aria-expanded="false" class="collapse second-level">
-
-                                <li class="sidebar-item"><a href="familias" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Familias</span></a></li>
-
-                                <li class="sidebar-item"><a href="subfamilias" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Sub-Familias</span></a></li>
-
-                                <li class="sidebar-item"><a href="marcas" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Marcas</span></a></li>
-
-                                <li class="sidebar-item"><a href="modelos" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Modelos</span></a></li>
-
-                                <li class="sidebar-item"><a href="presentaciones" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Presentaciones</span></a></li>
-
-                                <li class="sidebar-item"><a href="colores" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Colores</span></a></li>
-
-                                <li class="sidebar-item"><a href="origenes" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Origenes</span></a></li>
-
-                            </ul>
-                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="productos.php" aria-expanded="false"><i class="mdi mdi-cube"></i><span class="hide-menu">Inventario (Matriz)</span></a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Usuarios</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -622,18 +680,7 @@ case 'administradorS': ?>
 
                         <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="clients_saas.php" aria-expanded="false"><i class="mdi mdi-clipboard-text"></i>Clientes</a></li>
 
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Proveedores</span></a>
-                            <ul aria-expanded="false" class="collapse second-level">
-
-                                <li class="sidebar-item"><a href="proveedores" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Proveedores</span></a></li>
-
-                                <li class="sidebar-item"><a href="forpedido" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Nuevo Pedido</span></a></li>
-
-                                <li class="sidebar-item"><a href="pedidos" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Consulta Pedidos</span></a></li>
-
-                                <li class="sidebar-item"><a href="busquedapedidos" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Reporte Pedidos</span></a></li>
-                            </ul>
-                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="proveedores.php" aria-expanded="false"><i class="mdi mdi-truck-delivery"></i><span class="hide-menu">Gestión Proveedores</span></a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-collage"></i><span class="hide-menu">Almacen</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -652,17 +699,7 @@ case 'administradorS': ?>
                             </ul>
                         </li>
 
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-collage"></i><span class="hide-menu">Kardex Productos</span></a>
-                            <ul aria-expanded="false" class="collapse second-level">
-
-                                <li class="sidebar-item"><a href="buscakardex" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Kardex de Productos</span></a></li>
-
-                                <li class="sidebar-item"><a href="kardexvalorizado" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Kardex Valorizado</span></a></li>
-
-                                <li class="sidebar-item"><a href="kardexfechas" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Valorizado por Fechas</span></a></li>
-
-                            </ul>
-                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="kardex.php" aria-expanded="false"><i class="mdi mdi-chart-areaspline"></i><span class="hide-menu">Inventario Valorizado</span></a></li>
 
                         <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-receipt"></i><span class="hide-menu">Traspasos</span></a>
                             <ul aria-expanded="false" class="collapse second-level">
@@ -1039,9 +1076,23 @@ case 'cajero': ?>
 
                 <li class="sidebar-item waves-effect"><a href="panel" class="sidebar-link"><i class="mdi mdi-home"></i><span class="hide-menu"> Dashboard</span></a></li>
 
-                <li class="sidebar-item waves-effect"><a href="pos" class="sidebar-link"><i class="mdi mdi-desktop-mac"></i><span class="hide-menu"> POS</span></a></li>
+                <li class="sidebar-item waves-effect"><a href="vender.php" target="_blank" class="sidebar-link"><i class="mdi mdi-desktop-mac"></i><span class="hide-menu"> POS</span></a></li>
 
                 <li class="sidebar-item waves-effect"><a href="clientes" class="sidebar-link"><i class="mdi mdi-account-multiple"></i><span class="hide-menu"> Clientes</span></a></li>
+
+                <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-truck-delivery"></i><span class="hide-menu">Proveedores</span></a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item"><a href="proveedores" class="sidebar-link"><i class="mdi mdi-rounded-corner"></i><span class="hide-menu"> Consulta Proveedores</span></a></li>
+                        <li class="sidebar-item"><a href="pedidos" class="sidebar-link"><i class="mdi mdi-priority-low"></i><span class="hide-menu"> Consulta Pedidos</span></a></li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-cart"></i><span class="hide-menu">Compras </span></a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item"><a href="compras" class="sidebar-link"><i class="mdi mdi-cart"></i><span class="hide-menu"> Consulta Compras </span></a></li>
+                        <li class="sidebar-item"><a href="cuentasxpagar" class="sidebar-link"><i class="mdi mdi-cart"></i><span class="hide-menu"> Cuentas por Pagar </span></a></li>
+                    </ul>
+                </li>
 
                 <li class="sidebar-item"> <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-cube"></i><span class="hide-menu">Productos </span></a>
                     <ul aria-expanded="false" class="collapse first-level">

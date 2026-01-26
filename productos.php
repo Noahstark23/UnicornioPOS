@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once("class/class.php");
 if(!isset($_SESSION['acceso'])) {
     header("Location: index.php");
     exit;
@@ -23,16 +23,11 @@ if(!isset($_SESSION['acceso'])) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }
-        .page-wrapper {
-            background: #f9fafb !important;
-            padding-bottom: 0px !important;
-        }
-        /* Custom scrollbar for table */
+        
+        /* Table Scrollbar */
         .table-container::-webkit-scrollbar {
-            height: 8px;
-            width: 8px;
+            height: 8px; width: 8px;
         }
         .table-container::-webkit-scrollbar-thumb {
             background-color: #cbd5e1;
@@ -41,16 +36,22 @@ if(!isset($_SESSION['acceso'])) {
     </style>
 </head>
 
-<body class="fix-header bg-gray-50" x-data="productsGrid()">
+<body class="bg-gray-50 text-gray-800" x-data="productsGrid()">
 
-    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-boxed-layout="full" data-header-position="fixed" data-sidebar-position="fixed" class="mini-sidebar">
+    <div class="min-h-screen flex flex-col">
         
-        <?php include('menu.php'); ?>
+        <!-- HERO HEADER -->
+        <div class="bg-gradient-to-r from-indigo-700 to-purple-700 pb-24 pt-12 px-8 shadow-xl relative overflow-hidden">
+            
+            <!-- Botón Volver -->
+            <a href="panel" class="absolute top-6 left-6 z-20 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition flex items-center gap-2 border border-white/20 font-medium text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver al Panel
+            </a>
 
-        <div class="page-wrapper">
-
-            <!-- HERO HEADER -->
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 pb-24 pt-12 px-6 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
 
                 <div class="max-w-7xl mx-auto flex justify-between items-center relative z-10">
@@ -59,10 +60,12 @@ if(!isset($_SESSION['acceso'])) {
                         <p class="text-indigo-100 mt-1 opacity-90">Gestiona precios y stock en tiempo real.</p>
                     </div>
 
+                    <?php if($_SESSION['acceso'] != 'cajero') { ?>
                     <a href="producto_express.php" class="bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         NUEVO PRODUCTO
                     </a>
+                    <?php } ?>
                 </div>
             </div>
 
@@ -118,30 +121,38 @@ if(!isset($_SESSION['acceso'])) {
                                             </div>
                                         </td>
 
-                                        <!-- Precio (Editable) -->
+                                        <!-- Precio (Editable o Solo Lectura) -->
                                         <td class="p-2 text-right">
-                                            <div class="relative">
-                                                <span class="absolute left-3 top-2.5 text-gray-400 text-xs">C$</span>
-                                                <input type="number"
-                                                       x-model="product.precio"
-                                                       @focus="$el.select()"
-                                                       @keyup.enter="$el.blur()"
-                                                       @blur="updateProduct(product.id, 'precio', $event.target.value)"
-                                                       class="w-full text-right bg-transparent border-0 rounded-md py-2 px-3 pl-8 font-mono text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-                                                >
-                                            </div>
+                                            <?php if($_SESSION['acceso'] == 'cajero') { ?>
+                                                <span class="font-mono text-gray-700 font-bold">C$ <span x-text="product.precio"></span></span>
+                                            <?php } else { ?>
+                                                <div class="relative">
+                                                    <span class="absolute left-3 top-2.5 text-gray-400 text-xs">C$</span>
+                                                    <input type="number"
+                                                        x-model="product.precio"
+                                                        @focus="$el.select()"
+                                                        @keyup.enter="$el.blur()"
+                                                        @blur="updateProduct(product.id, 'precio', $event.target.value)"
+                                                        class="w-full text-right bg-transparent border-0 rounded-md py-2 px-3 pl-8 font-mono text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                                                    >
+                                                </div>
+                                            <?php } ?>
                                         </td>
 
-                                        <!-- Stock (Editable) -->
+                                        <!-- Stock (Editable o Solo Lectura) -->
                                         <td class="p-2 text-center">
-                                            <input type="number"
-                                                   x-model="product.stock"
-                                                   @focus="$el.select()"
-                                                   @keyup.enter="$el.blur()"
-                                                   @blur="updateProduct(product.id, 'stock', $event.target.value)"
-                                                   class="w-full text-center bg-transparent border-0 rounded-md py-2 px-2 font-mono text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-                                                   :class="product.stock <= 5 ? 'text-red-600 font-bold' : ''"
-                                            >
+                                            <?php if($_SESSION['acceso'] == 'cajero') { ?>
+                                                <span class="font-mono text-gray-700 font-bold" :class="product.stock <= 5 ? 'text-red-600' : ''" x-text="product.stock"></span>
+                                            <?php } else { ?>
+                                                <input type="number"
+                                                    x-model="product.stock"
+                                                    @focus="$el.select()"
+                                                    @keyup.enter="$el.blur()"
+                                                    @blur="updateProduct(product.id, 'stock', $event.target.value)"
+                                                    class="w-full text-center bg-transparent border-0 rounded-md py-2 px-2 font-mono text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                                                    :class="product.stock <= 5 ? 'text-red-600 font-bold' : ''"
+                                                >
+                                            <?php } ?>
                                         </td>
 
                                         <!-- Actions/Status -->

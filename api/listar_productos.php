@@ -11,8 +11,7 @@ try {
     // USAMOS SELECT * PARA EVITAR ERRORES DE COLUMNA
     // Así traemos todo lo que tenga la tabla, se llame como se llame.
     $sql = "SELECT * FROM productos 
-            WHERE tenant_id = 1 
-            AND (producto LIKE ? OR codproducto LIKE ?)
+            WHERE (producto LIKE ? OR codproducto LIKE ?)
             LIMIT 50";
 
     $stmt = $db->prepare($sql);

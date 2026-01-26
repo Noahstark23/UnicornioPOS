@@ -1,9 +1,58 @@
 <?php
-include_once('fpdf/pdf.php');
+include_once('fpdf/pdf_custom.php'); // Usar clase customizada con datos dinámicos
 include_once ('fpdf/barcode.php');
-require_once("class/class.php");	
+require_once("class/class.php");
+require_once('includes/db.php');
+require_once('includes/config.php');
+
 //ob_end_clean();
 ob_start();
+
+// ========== CARGAR CONFIGURACIÓN DINÁMICA DEL NEGOCIO ==========
+// Esta configuración estará disponible globalmente para todas las funciones de PDF
+try {
+    $db = DB::connect();
+    $sqlConfig = "SELECT cuit, nomsucursal, tlfsucursal, direcsucursal, correosucursal 
+                  FROM configuracion WHERE id = 1 LIMIT 1";
+    $stmtConfig = $db->prepare($sqlConfig);
+    $stmtConfig->execute();
+    $GLOBALS['config_negocio'] = $stmtConfig->fetch(PDO::FETCH_ASSOC);
+    
+    // Si no hay configuración, usar valores por defecto
+    if (!$GLOBALS['config_negocio']) {
+        $GLOBALS['config_negocio'] = [
+            'cuit' => 'N/A',
+            'nomsucursal' => 'MI NEGOCIO',
+            'tlfsucursal' => 'N/A',
+            'direcsucursal' => 'Dirección no configurada',
+            'correosucursal' => 'contacto@negocio.com'
+        ];
+    }
+    
+    // ========== FOOTER VIRAL DEL INSTALADOR ==========
+    // Datos del instalador desde config.php (definidos como constantes)
+    $GLOBALS['installer_info'] = [
+        'company' => INSTALLER_COMPANY,
+        'phone' => INSTALLER_PHONE,
+        'website' => defined('INSTALLER_WEBSITE') ? INSTALLER_WEBSITE : ''
+    ];
+    
+} catch (Exception $e) {
+    // En caso de error, continuar con valores por defecto
+    $GLOBALS['config_negocio'] = [
+        'cuit' => 'N/A',
+        'nomsucursal' => 'MI NEGOCIO',
+        'tlfsucursal' => 'N/A',
+        'direcsucursal' => 'Dirección no configurada',
+        'correosucursal' => 'contacto@negocio.com'
+    ];
+    $GLOBALS['installer_info'] = [
+        'company' => 'Sistema Unicornio POS',
+        'phone' => '',
+        'website' => ''
+    ];
+}
+
 
 $casos = array (
 
@@ -721,9 +770,10 @@ $tipo = decrypt($_GET['tipo']);
 if ($tipo == 'TICKET' || $tipo == 'FACTURA' || $tipo == 'GUIA' || $tipo == 'TICKETCREDITO' || $tipo == 'FACTURACOTIZACION') {
 
   $caso_data = $casos[$tipo];
-  $pdf = new PDF($caso_data['medidas'][0], $caso_data['medidas'][1], $caso_data['medidas'][2]);
+  // Usar PDF_Custom para facturas que tienen datos dinámicos
+  $pdf = new PDF_Custom($caso_data['medidas'][0], $caso_data['medidas'][1], $caso_data['medidas'][2]);
   $pdf->AddPage();
-  $pdf->SetAuthor("Ing. Ruben Chirinos");
+  $pdf->SetAuthor("Sistema Unicornio POS");
   $pdf->SetCreator("FPDF Y PHP");
   $pdf->{$caso_data['func']}();
   $pdf->AutoPrint(false);
@@ -733,9 +783,10 @@ if ($tipo == 'TICKET' || $tipo == 'FACTURA' || $tipo == 'GUIA' || $tipo == 'TICK
 } else {
 
   $caso_data = $casos[$tipo];
+  // Para otros reportes usar PDF estándar
   $pdf = new PDF($caso_data['medidas'][0], $caso_data['medidas'][1], $caso_data['medidas'][2]);
   $pdf->AddPage();
-  $pdf->SetAuthor("Ing. Ruben Chirinos");
+  $pdf->SetAuthor("Sistema Unicornio POS");
   $pdf->SetCreator("FPDF Y PHP");
   $pdf->{$caso_data['func']}();
   $pdf->Output($caso_data['output'][0], $caso_data['output'][1]);

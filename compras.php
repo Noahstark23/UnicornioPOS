@@ -2,7 +2,7 @@
 require_once("class/class.php");
 // Same session logic as always
 if (isset($_SESSION['acceso'])) {
-    if ($_SESSION["acceso"] == "administradorG" || $_SESSION["acceso"] == "administradorS" || $_SESSION["acceso"] == "secretaria") {
+    if ($_SESSION["acceso"] == "administradorG" || $_SESSION["acceso"] == "administradorS" || $_SESSION["acceso"] == "secretaria" || $_SESSION["acceso"] == "cajero") {
     } else { header("Location: error"); exit; }
 } else { header("Location: error"); exit; }
 ?>

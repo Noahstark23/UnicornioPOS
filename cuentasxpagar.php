@@ -1,7 +1,7 @@
 <?php
 require_once("class/class.php"); 
 if(isset($_SESSION['acceso'])) { 
-     if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS" || $_SESSION["acceso"]=="secretaria") {
+     if ($_SESSION['acceso'] == "administradorG" || $_SESSION["acceso"]=="administradorS" || $_SESSION["acceso"]=="secretaria" || $_SESSION["acceso"]=="cajero") {
 
 $tra = new Login();
 $ses = $tra->ExpiraSession(); 

@@ -260,12 +260,34 @@ try {
         $db->commit();
 
         // ====================================================================
+        // PASO 6: Calcular Saldo Restante del Cliente (para UI optimista)
+        // ====================================================================
+        $sqlSaldoRestante = "SELECT 
+                                SUM(v.totalpago - COALESCE(abonos.total_abonado, 0)) as saldo_total
+                             FROM ventas v
+                             LEFT JOIN (
+                                 SELECT codventa, SUM(montoabono) as total_abonado
+                                 FROM abonoscreditosventas
+                                 GROUP BY codventa
+                             ) abonos ON v.codventa = abonos.codventa
+                             WHERE v.codcliente = ? 
+                               AND v.tipopago = 'CREDITO'
+                               AND v.statusventa != 'PAGADA'
+                             HAVING saldo_total > 0";
+        
+        $stmtSaldo = $db->prepare($sqlSaldoRestante);
+        $stmtSaldo->execute([$idCliente]);
+        $rowSaldo = $stmtSaldo->fetch(PDO::FETCH_ASSOC);
+        $nuevoSaldoCliente = (float)($rowSaldo['saldo_total'] ?? 0);
+
+        // ====================================================================
         // RESPUESTA DE ÉXITO
         // ====================================================================
         echo json_encode([
             'success' => true,
             'message' => 'Abono procesado correctamente',
             'monto_total_aplicado' => $montoAbono,
+            'new_balance' => $nuevoSaldoCliente, // ✅ Saldo restante del cliente
             'creditos_afectados' => $creditosAfectados,
             'metodo_pago' => $metodoPago,
             'caja_utilizada' => $codCaja
