@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Docker
+docker-compose.yml
+docker-compose.dev.yml
+Dockerfile
+.dockerignore
+
+# Dependencies
+node_modules
+vendor
+
+# IDE
+.idea
+.vscode
+
+# System
+**/.DS_Store
+humbs.db
+
+# Logs
+logs
+*.log
+
+# Backups & Uploads local (se montan como volumen, no se copian)
+backups
+fotos
