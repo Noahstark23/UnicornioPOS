@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Aplicación Web (Unicornio POS)
+  app:
+    build: .
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=unicornio
+      - DB_USER=unicornio_user
+      - DB_PASS=secret_password_change_me
+      - API_PUBLIC=true
+    volumes:
+      # Persistencia de archivos subidos (fotos)
+      - unicornio_fotos:/var/www/html/fotos
+      - unicornio_backups:/var/www/html/backups
+    depends_on:
+      - db
+    networks:
+      - unicornio-network
+
+  # Base de Datos (MariaDB)
+  db:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_secret_change_me
+      - MYSQL_DATABASE=unicornio
+      - MYSQL_USER=unicornio_user
+      - MYSQL_PASSWORD=secret_password_change_me
+    volumes:
+      - unicornio_db_data:/var/lib/mysql
+      # Opcional: inicializar BD automáticamente si está vacía
+      - ./bd-sql/schema_clean.sql:/docker-entrypoint-initdb.d/1_schema.sql
+    networks:
+      - unicornio-network
+
+volumes:
+  unicornio_fotos:
+  unicornio_backups:
+  unicornio_db_data:
+
+networks:
+  unicornio-network:
+    driver: bridge
