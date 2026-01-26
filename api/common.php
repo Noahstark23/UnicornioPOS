@@ -34,6 +34,12 @@ function verificar_acceso_api() {
 // Ejecutar verificación por defecto
 verificar_acceso_api();
 
+// 4.1 Inicializar Contexto Multi-Tenant
+require_once __DIR__ . '/../includes/tenant_middleware.php';
+// Si hay sesión, el middleware tomará el ID de ahí. 
+// Si es API key (futuro), aquí se setearía.
+TenantContext::getTenantId(); // Inicializa singleton
+
 // 5. Incluir Base de Datos
 // Ajustar ruta relativa automáticamente
 $paths = [

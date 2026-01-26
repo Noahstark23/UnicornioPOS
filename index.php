@@ -6,6 +6,19 @@ $tra = new Login();
 if(isset($_POST["proceso"]) and $_POST["proceso"]=="login")
 {
   $log = $tra->Logueo();
+  
+  // INTEGRACIÓN MULTI-TENANT
+  // Si el login fue exitoso (generalmente Logueo() hace redirect o exit, 
+  // pero si llegamos aquí, aseguramos el contexto)
+  if (isset($_SESSION['id_usuario'])) {
+      require_once("includes/tenant_middleware.php");
+      // Asumimos que Logueo() ya puso tenant_id en sesión, si no, lo forzamos a 1
+      if (!isset($_SESSION['tenant_id'])) {
+          $_SESSION['tenant_id'] = 1; 
+      }
+      TenantContext::setTenantId($_SESSION['tenant_id']);
+  }
+  
   exit;
 }
 elseif(isset($_POST["proceso"]) and $_POST["proceso"]=="recuperar")
