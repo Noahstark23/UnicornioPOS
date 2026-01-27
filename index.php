@@ -58,6 +58,7 @@ elseif(isset($_POST["proceso"]) and $_POST["proceso"]=="recuperar")
 <script type="text/javascript" src="assets/script/validation.min.js"></script>
 <script type="text/javascript" src="assets/script/script.js"></script>
 <!-- script jquery -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <body>
@@ -85,6 +86,9 @@ elseif(isset($_POST["proceso"]) and $_POST["proceso"]=="recuperar")
 
             <form class="form form-material new-lg-form" name="loginform" id="loginform" action="">
 
+            <div class="text-center m-b-20">
+                <img src="assets/images/logo-index.png" alt="UnicornioPOS" style="max-width: 150px; height: auto;">
+            </div>
 
             <h3 class="box-title m-b-0">Login de Acceso</h3>
             <small class="text-danger">Introduzca sus datos a continuación</small>
@@ -159,6 +163,7 @@ elseif(isset($_POST["proceso"]) and $_POST["proceso"]=="recuperar")
               </div>
             </div>
           </form>
+          <div class="text-center text-muted m-t-20 p-b-20" style="font-size: 0.9em;">Versión Cloud 1.0 ☁️</div>
         </div>
       </div>            
   
