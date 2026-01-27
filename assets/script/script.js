@@ -41,12 +41,13 @@ $('document').ready(function() {
 								 
 								    $("#login").fadeIn(1000, function(){ 
 			
-				 var n = noty({
-                 text: "<span class='fa fa-warning'></span> LOS CAMPOS NO PUEDEN IR VACIOS, VERIFIQUE NUEVAMENTE POR FAVOR...!",
-                 theme: 'defaultTheme',
-                 layout: 'center',
-                 type: 'error',
-                 timeout: 5000, });
+				 Swal.fire({
+                    icon: 'warning',
+                    title: '¡Campos Vacíos!',
+                    text: 'Los campos no pueden ir vacíos, verifique nuevamente por favor.',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Reintentar'
+                 });
 			     $("#btn-login").html('<i class="fa fa-sign-in"></i> Acceder');
 				    
 					                                                 });
@@ -55,12 +56,13 @@ $('document').ready(function() {
 									 
 									 $("#login").fadeIn(1000, function(){
 			
-				 var n = noty({
-                 text: "<span class='fa fa-warning'></span> LOS DATOS INGRESADOS NO EXISTEN, VERIFIQUE NUEVAMENTE POR FAVOR...!",
-                 theme: 'defaultTheme',
-                 layout: 'center',
-                 type: 'error',
-                 timeout: 5000, });
+				 Swal.fire({
+                    icon: 'error',
+                    title: '¡Error de Acceso!',
+                    text: 'Los datos ingresados no existen o son incorrectos, verifique nuevamente.',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Reintentar'
+                 });
 			     $("#btn-login").html('<i class="fa fa-sign-in"></i> Acceder');
 				 
 				                                                        }); 
