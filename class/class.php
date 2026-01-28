@@ -12661,7 +12661,7 @@ public function CerrarArqueoCaja()
 ###################### FUNCION BUSCAR ARQUEOS DE CAJA POR FECHAS ######################
 public function BuscarArqueosxFechas() 
 	       {
-		self::SetNames();		
+		self::SetNames();
 $sql = "SELECT * FROM arqueocaja INNER JOIN cajas ON arqueocaja.codcaja = cajas.codcaja LEFT JOIN usuarios ON cajas.codigo = usuarios.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal WHERE sucursales.codsucursal = ? AND arqueocaja.codcaja = ? AND DATE_FORMAT(arqueocaja.fechaapertura,'%Y-%m-%d') >= ? AND DATE_FORMAT(arqueocaja.fechaapertura,'%Y-%m-%d') <= ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->bindValue(1, trim(decrypt($_GET['codsucursal'])));
@@ -13109,7 +13109,7 @@ if($tipomovimiento=="INGRESO"){
 ################## FUNCION BUSCAR MOVIMIENTOS DE CAJA POR FECHAS #######################
 public function BuscarMovimientosxFechas() 
 	       {
-		self::SetNames();		
+		self::SetNames();
 $sql = "SELECT * FROM movimientoscajas INNER JOIN cajas ON movimientoscajas.codcaja = cajas.codcaja LEFT JOIN usuarios ON cajas.codigo = usuarios.codigo LEFT JOIN sucursales ON usuarios.codsucursal = sucursales.codsucursal LEFT JOIN mediospagos ON mediospagos.codmediopago = movimientoscajas.codmediopago WHERE sucursales.codsucursal = ? AND movimientoscajas.codcaja = ? AND DATE_FORMAT(movimientoscajas.fechamovimiento,'%Y-%m-%d') >= ? AND DATE_FORMAT(movimientoscajas.fechamovimiento,'%Y-%m-%d') <= ?";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->bindValue(1, trim(decrypt($_GET['codsucursal'])));
