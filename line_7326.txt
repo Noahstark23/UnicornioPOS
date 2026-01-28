@@ -1,1 +1,0 @@
-utf8_decode($reg[$i]['fechavencecredito'] == '0000-00-00' || $reg[$i]['fechavencecredito'] >= date("Y-m-d") && $reg[$i]['fechapagado']== "0000-00-00"
